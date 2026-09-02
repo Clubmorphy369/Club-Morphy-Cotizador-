@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
+        /* ===== RESET Y ESTILOS BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -36,7 +37,7 @@
             position: relative;
         }
 
-        /* Botón Admin (oculto para usuarios normales) */
+        /* === BOTÓN ADMIN === */
         .admin-toggle {
             position: absolute;
             top: 1.2rem;
@@ -51,6 +52,7 @@
             transition: all 0.2s;
             font-family: 'Inter', sans-serif;
             opacity: 0.4;
+            z-index: 10;
         }
         .admin-toggle:hover {
             opacity: 1;
@@ -64,7 +66,84 @@
             color: #1a2a3a;
         }
 
-        /* Panel de edición (oculto por defecto) */
+        /* === MODAL DE CONTRASEÑA === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .modal-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1a2a3a;
+        }
+        .modal-box p {
+            color: #5a6f8f;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        .modal-box input:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .modal-box .btn-modal {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 0.3rem;
+        }
+        .modal-box .btn-modal:hover {
+            background: #0f1e2f;
+        }
+        .modal-box .btn-modal.cancel {
+            background: #e0e4ea;
+            color: #1a2a3a;
+        }
+        .modal-box .btn-modal.cancel:hover {
+            background: #d0d7e2;
+        }
+        .modal-box .error-msg {
+            color: #c0392b;
+            font-size: 0.85rem;
+            margin-top: -0.5rem;
+            margin-bottom: 0.8rem;
+            display: none;
+        }
+
+        /* === PANEL DE EDICIÓN === */
         .edit-panel {
             display: none;
             background: #f8f6f2;
@@ -181,10 +260,37 @@
         .btn-agregar-horario:hover {
             background: #dce6f0;
         }
+        /* Contraseña en el panel */
+        .password-group {
+            margin-top: 1rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .password-group input {
+            padding: 0.6rem 0.8rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+        .password-group button {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .password-group button:hover {
+            background: #0f1e2f;
+        }
 
-        /* ---- El resto de estilos (calculadora, vista previa) son iguales que antes ---- */
-        /* Los mantengo igual, solo añado algunos ajustes para el selector de horarios */
-
+        /* === RESTO DE ESTILOS (calculadora, resultados, etc.) === */
         .row {
             display: flex;
             gap: 2rem;
@@ -333,6 +439,67 @@
             font-style: italic;
         }
 
+        /* Selector de horario para usuarios */
+        .horario-selector {
+            background: #faf8f5;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .horario-selector label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .horario-selector select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+        }
+        .horario-selector select:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .horario-selector .no-horarios {
+            color: #a00;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
+        /* Tabla de horarios disponibles (visible para todos) */
+        .horarios-disponibles {
+            margin: 1.5rem 0;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        .horarios-disponibles h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: #1a2a3a;
+        }
+        .horarios-disponibles table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .horarios-disponibles th {
+            background: #eef3fa;
+            text-align: left;
+            padding: 0.4rem 0.6rem;
+            border-bottom: 2px solid #d0d7e2;
+        }
+        .horarios-disponibles td {
+            padding: 0.4rem 0.6rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
         .btn-pdf {
             width: 100%;
             padding: 1rem;
@@ -373,37 +540,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Selector de horario para usuarios */
-        .horario-selector {
-            background: #faf8f5;
-            border-radius: 12px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border: 1px solid rgba(201, 168, 76, 0.2);
-        }
-        .horario-selector label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-        .horario-selector select {
-            width: 100%;
-            padding: 0.7rem;
-            border: 2px solid #d0d7e2;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: white;
-        }
-        .horario-selector select:focus {
-            outline: none;
-            border-color: #c9a84c;
-        }
-        .horario-selector .no-horarios {
-            color: #a00;
-            font-size: 0.9rem;
-            padding: 0.5rem 0;
-        }
-
         .preview-section {
             margin-top: 2rem;
             border-top: 2px dashed #d0d7e2;
@@ -432,7 +568,7 @@
             background: white;
             padding: 20px;
         }
-        .preview-container #pdf-preview h1, 
+        .preview-container #pdf-preview h1,
         .preview-container #pdf-preview h2 {
             margin-top: 0.5rem;
             margin-bottom: 0.5rem;
@@ -473,6 +609,11 @@
             border-top: 1px solid rgba(201, 168, 76, 0.15);
             padding-top: 1rem;
         }
+        .footer-text .contacto {
+            margin-top: 0.3rem;
+            font-size: 0.85rem;
+            color: #5a6f8f;
+        }
 
         @media (max-width: 768px) {
             .container { padding: 1.5rem; }
@@ -486,7 +627,7 @@
 <body>
     <div class="container">
 
-        <!-- Botón Admin (oculto a simple vista) -->
+        <!-- Botón Admin -->
         <button class="admin-toggle" id="adminToggle">⚙️ Admin</button>
 
         <!-- Encabezado -->
@@ -500,7 +641,7 @@
             </div>
         </div>
 
-        <!-- Panel de edición (oculto) -->
+        <!-- Panel de edición (oculto por defecto) -->
         <div class="edit-panel" id="editPanel">
             <h3>✏️ Edición de datos <span>visible solo para el administrador</span></h3>
             <div class="edit-row">
@@ -519,6 +660,27 @@
                 <div id="horariosList"></div>
                 <button class="btn-agregar-horario" id="agregarHorario">+ Agregar horario</button>
                 <p style="font-size:0.8rem; color:#7a8fa3; margin-top:0.5rem;">Los usuarios podrán seleccionar uno de estos horarios para la cotización.</p>
+            </div>
+
+            <!-- Cambiar contraseña -->
+            <div class="password-group">
+                <input type="password" id="nuevaPassword" placeholder="Nueva contraseña (dejar en blanco para no cambiar)" />
+                <button id="cambiarPasswordBtn">Cambiar contraseña</button>
+                <span id="passwordMsg" style="font-size:0.85rem; color:#27ae60; display:none;">✓ Contraseña actualizada</span>
+            </div>
+        </div>
+
+        <!-- Modal de autenticación -->
+        <div class="modal-overlay" id="authModal">
+            <div class="modal-box">
+                <h3>🔒 Acceso restringido</h3>
+                <p>Ingresa la contraseña de administrador para editar los datos.</p>
+                <input type="password" id="authPassword" placeholder="Contraseña" />
+                <div class="error-msg" id="authError">Contraseña incorrecta. Intenta de nuevo.</div>
+                <div>
+                    <button class="btn-modal cancel" id="authCancel">Cancelar</button>
+                    <button class="btn-modal" id="authConfirm">Ingresar</button>
+                </div>
             </div>
         </div>
 
@@ -557,13 +719,21 @@
                     <div class="warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
                 </div>
 
-                <!-- Selector de horario para el usuario (visible siempre) -->
+                <!-- Selector de horario para el usuario -->
                 <div class="horario-selector" id="horarioSelector">
                     <label for="horarioSelect">Selecciona el horario para la clase</label>
                     <select id="horarioSelect">
                         <option value="">-- Cargando horarios --</option>
                     </select>
                     <div class="no-horarios" id="noHorariosMsg" style="display:none;">No hay horarios disponibles. El administrador debe agregarlos.</div>
+                </div>
+
+                <!-- Tabla de horarios disponibles (visible para todos) -->
+                <div class="horarios-disponibles" id="horariosDisponibles">
+                    <h4>📋 Horarios disponibles</h4>
+                    <div id="horariosTablaContainer">
+                        <p style="color:#7a8fa3; font-size:0.9rem;">Cargando horarios...</p>
+                    </div>
                 </div>
 
                 <button class="btn-pdf" id="pdfBtn">📄 Descargar Cotización en PDF</button>
@@ -578,7 +748,10 @@
             </div>
         </div>
 
-        <div class="footer-text">Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).</div>
+        <div class="footer-text">
+            <p>Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).</p>
+            <p class="contacto">📧 clubmorphy369@gmail.com · 📱 7731856476</p>
+        </div>
     </div>
 
     <script>
@@ -602,20 +775,49 @@
             const agregarHorarioBtn = document.getElementById('agregarHorario');
             const horarioSelect = document.getElementById('horarioSelect');
             const noHorariosMsg = document.getElementById('noHorariosMsg');
+            const horariosTablaContainer = document.getElementById('horariosTablaContainer');
 
             const previewContainer = document.getElementById('pdf-preview');
             const adminToggle = document.getElementById('adminToggle');
             const editPanel = document.getElementById('editPanel');
 
-            // ---- Estado ----
-            let horarios = []; // array de { dia, inicio, fin }
+            // Modal
+            const authModal = document.getElementById('authModal');
+            const authPassword = document.getElementById('authPassword');
+            const authConfirm = document.getElementById('authConfirm');
+            const authCancel = document.getElementById('authCancel');
+            const authError = document.getElementById('authError');
 
-            // Cargar horarios desde localStorage si existen
+            // Cambiar contraseña
+            const nuevaPassword = document.getElementById('nuevaPassword');
+            const cambiarPasswordBtn = document.getElementById('cambiarPasswordBtn');
+            const passwordMsg = document.getElementById('passwordMsg');
+
+            // ---- Estado ----
+            let horarios = [];
+            let isAdminMode = false;
+
+            // ---- Gestión de contraseña ----
+            const PASSWORD_KEY = 'morphyy_admin_password';
+
+            function getStoredPassword() {
+                return localStorage.getItem(PASSWORD_KEY) || 'admin123'; // predeterminada
+            }
+
+            function setStoredPassword(pwd) {
+                localStorage.setItem(PASSWORD_KEY, pwd);
+            }
+
+            // Verificar si la contraseña ingresada es correcta
+            function checkPassword(pwd) {
+                return pwd === getStoredPassword();
+            }
+
+            // ---- Cargar datos desde localStorage ----
             const savedHorarios = localStorage.getItem('morphyy_horarios');
             if (savedHorarios) {
                 try { horarios = JSON.parse(savedHorarios); } catch(e) { horarios = []; }
             }
-            // Si no hay horarios, agregar algunos por defecto (basados en el horario de German)
             if (horarios.length === 0) {
                 horarios = [
                     { dia: 'Lunes', inicio: '09:00', fin: '10:00' },
@@ -629,7 +831,6 @@
                 localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
             }
 
-            // Cargar escuela y dirigido desde localStorage
             const savedEscuela = localStorage.getItem('morphyy_escuela');
             if (savedEscuela) editEscuela.value = savedEscuela;
             const savedDirigido = localStorage.getItem('morphyy_dirigido');
@@ -684,7 +885,6 @@
                     `;
                     horariosList.appendChild(div);
 
-                    // Eventos para editar horario
                     const selDia = div.querySelector('.edit-dia');
                     const inpInicio = div.querySelector('.edit-inicio');
                     const inpFin = div.querySelector('.edit-fin');
@@ -709,8 +909,8 @@
                         actualizarTodo();
                     });
                 });
-                // Actualizar el selector de horarios para usuarios
                 populateHorarioSelect();
+                renderHorariosDisponibles();
             }
 
             // ---- Poblar el selector de horarios para usuarios ----
@@ -731,19 +931,25 @@
                     opt.textContent = `${h.dia} ${h.inicio} - ${h.fin}`;
                     horarioSelect.appendChild(opt);
                 });
-                // Seleccionar el primero por defecto si no hay selección previa
                 if (!horarioSelect.value) {
                     horarioSelect.selectedIndex = 0;
                 }
             }
 
-            // ---- Agregar horario ----
-            agregarHorarioBtn.addEventListener('click', function() {
-                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00' });
-                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
-                renderHorarios();
-                actualizarTodo();
-            });
+            // ---- Renderizar tabla de horarios disponibles (visible para todos) ----
+            function renderHorariosDisponibles() {
+                if (horarios.length === 0) {
+                    horariosTablaContainer.innerHTML = `<p style="color:#7a8fa3; font-size:0.9rem;">No hay horarios disponibles.</p>`;
+                    return;
+                }
+                let html = `<table>
+                    <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th></tr></thead><tbody>`;
+                horarios.forEach(h => {
+                    html += `<tr><td>${h.dia}</td><td>${h.inicio}</td><td>${h.fin}</td></tr>`;
+                });
+                html += `</tbody></table>`;
+                horariosTablaContainer.innerHTML = html;
+            }
 
             // ---- Generar contenido del PDF (usando datos actuales) ----
             function generarContenidoPDF(n, res) {
@@ -753,7 +959,6 @@
                     year: 'numeric', month: 'long', day: 'numeric'
                 });
 
-                // Obtener horario seleccionado
                 let horarioSeleccionado = null;
                 const idx = parseInt(horarioSelect.value, 10);
                 if (!isNaN(idx) && horarios[idx]) {
@@ -768,6 +973,9 @@
                     inicio = horarioSeleccionado.inicio;
                     fin = horarioSeleccionado.fin;
                 }
+
+                // Obtener contacto fijo
+                const contacto = 'German Hernández Cornejo · clubmorphy369@gmail.com · 7731856476';
 
                 return `
                 <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
@@ -830,25 +1038,25 @@
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">3. Condiciones generales</h2>
                     <ul style="list-style: none; padding: 0;">
                         <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
-                            <strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos (ej. 14-15 y 15-16), cada grupo paga su propia tarifa aplicando la tabla anterior. No se suman los alumnos para acceder al descuento.
+                            <strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos, cada grupo paga su propia tarifa. No se suman los alumnos para acceder al descuento.
                         </li>
                         <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
-                            <strong>Política de pago:</strong> El costo se define al inicio de cada periodo (ej. mensual) con base en los alumnos inscritos formalmente. El monto acordado no cambia por inasistencias puntuales.
+                            <strong>Política de pago:</strong> El costo se define al inicio de cada periodo con base en los alumnos inscritos formalmente. No cambia por inasistencias puntuales.
                         </li>
                         <li style="padding: 0.4rem 0;">
-                            <strong>Bajas definitivas:</strong> Si durante el curso se producen bajas que reduzcan el grupo a un tramo inferior (ej. de 21-30 a 15-20, o de 15-20 a menos de 15), el precio se ajustará a la tarifa correspondiente <strong>a partir de la siguiente clase</strong>, beneficiando a ambas partes.
+                            <strong>Bajas definitivas:</strong> Si el grupo baja de tramo, el precio se ajustará a la tarifa correspondiente a partir de la siguiente clase.
                         </li>
                     </ul>
 
                     <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b; font-size: 0.9rem;">
-                        <p><strong>Contacto:</strong> German Hernández Cornejo · [Teléfono] · [Correo]</p>
+                        <p><strong>Contacto:</strong> ${contacto}</p>
                         <p style="font-size: 0.8rem; color: #6a7b96;">Esta cotización tiene una vigencia de 15 días naturales.</p>
                     </div>
                 </div>
                 `;
             }
 
-            // ---- Actualizar vista previa ----
+            // ---- Actualizar vista previa y toda la UI ----
             function actualizarTodo() {
                 let n = parseInt(inputAlumnos.value, 10);
                 if (isNaN(n) || n < 1) n = 1;
@@ -897,21 +1105,85 @@
                 actualizarTodo();
             });
 
-            // ---- Eventos de los campos editables ----
+            // ---- Eventos de campos editables ----
             editEscuela.addEventListener('input', actualizarTodo);
             editDirigido.addEventListener('input', actualizarTodo);
 
             // ---- Evento de cambio de horario en el selector ----
             horarioSelect.addEventListener('change', actualizarTodo);
 
-            // ---- Toggle del panel de administración ----
+            // ---- Agregar horario ----
+            agregarHorarioBtn.addEventListener('click', function() {
+                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00' });
+                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+                renderHorarios();
+                actualizarTodo();
+            });
+
+            // ---- Cambiar contraseña ----
+            cambiarPasswordBtn.addEventListener('click', function() {
+                const newPwd = nuevaPassword.value.trim();
+                if (newPwd === '') {
+                    alert('Ingresa una nueva contraseña (no puede estar vacía).');
+                    return;
+                }
+                setStoredPassword(newPwd);
+                passwordMsg.style.display = 'inline';
+                setTimeout(() => { passwordMsg.style.display = 'none'; }, 3000);
+                nuevaPassword.value = '';
+                alert('Contraseña actualizada correctamente.');
+            });
+
+            // ---- Autenticación ----
+            function mostrarModal() {
+                authPassword.value = '';
+                authError.style.display = 'none';
+                authModal.classList.add('active');
+                authPassword.focus();
+            }
+
+            function ocultarModal() {
+                authModal.classList.remove('active');
+            }
+
             adminToggle.addEventListener('click', function() {
-                editPanel.classList.toggle('visible');
-                this.classList.toggle('active');
-                if (editPanel.classList.contains('visible')) {
-                    this.textContent = '🔒 Ocultar Admin';
-                } else {
+                if (isAdminMode) {
+                    // Si ya está en modo admin, cerrar el panel y ocultar
+                    isAdminMode = false;
+                    editPanel.classList.remove('visible');
+                    this.classList.remove('active');
                     this.textContent = '⚙️ Admin';
+                    return;
+                }
+                // Si no está en modo admin, pedir contraseña
+                mostrarModal();
+            });
+
+            authConfirm.addEventListener('click', function() {
+                const pwd = authPassword.value;
+                if (checkPassword(pwd)) {
+                    isAdminMode = true;
+                    editPanel.classList.add('visible');
+                    adminToggle.classList.add('active');
+                    adminToggle.textContent = '🔒 Ocultar Admin';
+                    ocultarModal();
+                    // Renderizar horarios en el panel
+                    renderHorarios();
+                } else {
+                    authError.style.display = 'block';
+                    authPassword.value = '';
+                    authPassword.focus();
+                }
+            });
+
+            authCancel.addEventListener('click', function() {
+                ocultarModal();
+            });
+
+            // Cerrar modal al presionar Enter en el campo de contraseña
+            authPassword.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    authConfirm.click();
                 }
             });
 
