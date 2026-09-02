@@ -1262,6 +1262,7 @@
                 });
                 solicitudesPendientes.innerHTML = html;
 
+                // Eventos aprobar/rechazar
                 document.querySelectorAll('.btn-aprobar').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -1276,20 +1277,25 @@
                 });
             }
 
-            // ---- APROBAR / RECHAZAR ----
+            // ---- APROBAR / RECHAZAR (con actualización automática) ----
             function aprobarSolicitud(idx) {
                 const solicitud = solicitudes[idx];
                 if (!solicitud || solicitud.estado !== 'pendiente') return;
+
+                // Marcar horario como ocupado
                 const horarioIdx = solicitud.horarioIndex;
                 if (horarioIdx !== undefined && horarios[horarioIdx]) {
                     horarios[horarioIdx].estado = 'ocupado';
                     horarios[horarioIdx].escuela = solicitud.escuela;
                     localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 }
+
                 solicitud.estado = 'aprobada';
                 saveSolicitudes();
+
+                // Actualizar toda la interfaz sin recargar
                 actualizarTodo();
-                alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado.');
+                alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado y se actualizó el horario público.');
             }
 
             function rechazarSolicitud(idx) {
@@ -1409,6 +1415,7 @@
                 detalleDisplay.textContent = res.detalle;
                 tarifaDescDisplay.textContent = res.tarifaDesc;
 
+                // Tablas y selectores
                 renderHorariosTabla();
                 populateHorarioSelect();
 
