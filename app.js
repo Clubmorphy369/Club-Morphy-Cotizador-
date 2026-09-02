@@ -19,6 +19,7 @@
     let log = [];
     let chartEscuelas = null;
     let chartDias = null;
+    let previewEditable = false;
 
     // ---- ELEMENTOS DOM ----
     const adminToggle = document.getElementById('adminToggle');
@@ -77,6 +78,7 @@
     const manualNoHorariosDisponibles = document.getElementById('manualNoHorariosDisponibles');
     const manualCancelar = document.getElementById('manualCancelar');
     const manualGuardar = document.getElementById('manualGuardar');
+    const btnEditarPreview = document.getElementById('btnEditarPreview');
 
     // ---- FUNCIONES DE BITÁCORA ----
     function agregarLog(accion, detalles) {
@@ -278,7 +280,6 @@
         if (savedSolicitudes) {
             try { solicitudes = JSON.parse(savedSolicitudes); } catch(e) { solicitudes = []; }
         }
-        // Migración de solicitudes antiguas
         solicitudes.forEach(s => {
             if (s.horarioIndex !== undefined && !s.horariosSeleccionados) {
                 s.horariosSeleccionados = [s.horarioIndex];
@@ -299,7 +300,7 @@
         return { total: 500, porAlumno: 500 / n, rango: '21 – 30 alumnos', detalle: 'Precio cerrado por grupo', tarifaDesc: '21 a 30 → $500.00 total' };
     }
 
-    // ---- GENERAR CONTENIDO PDF ----
+    // ---- GENERAR CONTENIDO PDF (con condiciones detalladas) ----
     function generarContenidoPDF(escuela, dirigido, horariosSeleccionados, alumnos, comentario) {
         const totalHoras = horariosSeleccionados.length;
         let costoTotal = 0;
@@ -350,12 +351,20 @@
                     <span>Costo total: <strong>$${costoTotal.toFixed(2)} MXN</strong> · Costo por alumno: <strong>$${(costoTotal / alumnos).toFixed(2)} MXN</strong></span>
                 </div>
                 <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem;">3. Condiciones generales</h2>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Grupos separados:</strong> Cada grupo paga su propia tarifa.</li>
-                    <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Política de pago:</strong> El costo se define al inicio del periodo.</li>
-                    <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Bajas definitivas:</strong> El precio se ajusta si el grupo baja de tramo. Las inasistencias no modifican el costo.</li>
-                    <li style="padding: 0.4rem 0;"><strong>Aumento de alumnos:</strong> Si el grupo aumenta (máximo 30), se aplicará el incremento correspondiente.</li>
+                <p style="margin: 0.8rem 0;">Estimados,</p>
+                <p style="margin: 0 0 1rem;">Si el horario propuesto les resulta adecuado, les comunico los costos de la clase:</p>
+                <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                    <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>De 15 a 20 alumnos:</strong> $25.00 por alumno (equivalente a un total de $375.00 a $500.00).</li>
+                    <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>De 21 a 30 alumnos:</strong> $500.00 total por grupo (costo por alumno desde $23.80 para 21 hasta $16.60 para 30). Mientras más alumnos, menor costo por persona.</li>
+                    <li style="padding: 0.4rem 0;"><strong>Menos de 15 alumnos:</strong> $350.00 fijos, aplicable para una o dos horas de clase.</li>
                 </ul>
+                <p style="margin: 1rem 0;">Es importante señalar que, en caso de formar dos grupos en horarios distintos (por ejemplo, uno de 14:00 a 15:00 y otro de 15:00 a 16:00), <strong>cada grupo pagará su propia tarifa</strong> conforme a las mismas condiciones. No se suman los alumnos de ambos grupos para acceder a descuentos, ya que éstos aplican por grupo de manera independiente.</p>
+                <p style="margin: 1rem 0;"><strong>Sobre la política de pago y ajustes:</strong></p>
+                <p style="margin: 0.5rem 0;">El costo se definirá al inicio de cada periodo (por ejemplo, por mes) con base en el número de alumnos inscritos formalmente. Dicho monto se mantendrá fijo durante ese periodo, independientemente de inasistencias puntuales.</p>
+                <p style="margin: 0.5rem 0;">No obstante, si durante el curso se producen <strong>bajas definitivas</strong> que reduzcan el grupo a un tramo inferior (por ejemplo, de 21-30 a 15-20, o de 15-20 a menos de 15), el precio se ajustará a la tarifa correspondiente a partir de la siguiente clase, para beneficiar a ambas partes. Así, no se paga de más por alumnos que ya no están, y el profesor puede planificar sus ingresos sin cambios repentinos.</p>
+                <p style="margin: 1rem 0 0.5rem;">Le agradeceré me confirme el número aproximado de participantes para definir el monto final.</p>
+                <p style="margin: 0.5rem 0;">Quedo atento a su respuesta.</p>
+                <p style="margin: 0.5rem 0;">Saludos cordiales.</p>
                 <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b;">
                     <p><strong>Contacto:</strong> German Hernández Cornejo · clubmorphy369@gmail.com · 7731856476</p>
                     <p style="font-size: 0.8rem; color: #6a7b96;">Vigencia: 15 días naturales.</p>
@@ -956,7 +965,13 @@
 
     // ---- GENERAR PDF DESDE SOLICITUD ----
     function generarPDFDesdeSolicitud(solicitud) {
-        const contenido = generarContenidoPDF(solicitud.escuela, solicitud.dirigido, solicitud.horariosSeleccionados, solicitud.alumnos, solicitud.comentario);
+        // Usar contenido del preview si está en modo edición
+        let contenido;
+        if (previewEditable) {
+            contenido = previewContainer.innerHTML;
+        } else {
+            contenido = generarContenidoPDF(solicitud.escuela, solicitud.dirigido, solicitud.horariosSeleccionados, solicitud.alumnos, solicitud.comentario);
+        }
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = contenido;
         tempDiv.style.position = 'fixed';
@@ -1049,6 +1064,19 @@
             } else {
                 previewContainer.innerHTML = '<p class="text-muted">No hay horarios disponibles para previsualizar.</p>';
             }
+        }
+
+        // Configurar edición del preview si es admin
+        if (isAdminMode && ultimaAprobada) {
+            previewContainer.setAttribute('contenteditable', 'true');
+            previewContainer.style.border = '2px dashed #c9a84c';
+            previewContainer.style.padding = '10px';
+            previewEditable = true;
+        } else {
+            previewContainer.removeAttribute('contenteditable');
+            previewContainer.style.border = 'none';
+            previewContainer.style.padding = '0';
+            previewEditable = false;
         }
     }
 
