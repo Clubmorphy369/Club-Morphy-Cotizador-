@@ -5,128 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Club Morphyy - Calculadora de Tarifas</title>
 
-    <!-- Fuentes Google -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-    <!-- Librerías para PDF (html2canvas + jspdf) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* ===== RESET Y ESTILOS GENERALES ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
             padding: 2rem 1rem;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             color: #1a2a3a;
         }
-
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             width: 100%;
             background: white;
             border-radius: 24px;
-            padding: 3rem 2.5rem;
+            padding: 2.5rem;
             box-shadow: 0 20px 60px rgba(26, 42, 58, 0.08);
             border: 1px solid rgba(201, 168, 76, 0.1);
-            position: relative;
-            overflow: hidden;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(201, 168, 76, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        /* ===== ENCABEZADO ===== */
+        /* Encabezado */
         .header-wrapper {
-            position: relative;
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
             border-bottom: 2px solid #1a2a3a;
-        }
-
-        .header-wrapper::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, #c9a84c 0%, #1a2a3a 100%);
-        }
-
-        .header-main {
             display: flex;
             align-items: center;
-            gap: 1.8rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
-
         .club-icon {
             font-size: 3.5rem;
             line-height: 1;
-            filter: drop-shadow(0 4px 12px rgba(201, 168, 76, 0.3));
         }
-
         .header-titles h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.6rem;
+            font-size: 2.4rem;
             font-weight: 700;
             color: #1a2a3a;
-            letter-spacing: -0.5px;
-            line-height: 1.1;
         }
-
         .header-titles .club-name {
             color: #c9a84c;
         }
-
-        .header-subtitle {
-            font-size: 1rem;
-            color: #5a6f8f;
-            font-weight: 500;
-        }
-
         .badge {
             display: inline-block;
-            background: linear-gradient(135deg, #c9a84c 0%, #e0b961 100%);
+            background: linear-gradient(135deg, #c9a84c, #e0b961);
             color: white;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
-            padding: 0.35rem 0.9rem;
+            padding: 0.3rem 0.9rem;
             border-radius: 50px;
-            letter-spacing: 0.5px;
-            margin-left: 0.6rem;
+            margin-left: 0.5rem;
             box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
         }
 
-        /* ===== INPUT ===== */
-        .input-section {
-            background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
-            border: 1px solid rgba(201, 168, 76, 0.15);
-            border-radius: 18px;
-            padding: 2rem;
-            margin: 2.5rem 0;
-            position: relative;
+        /* Layout de dos columnas */
+        .row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1 1 300px;
         }
 
+        /* Panel de edición */
+        .edit-panel {
+            background: #f8f6f2;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .edit-panel h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1a2a3a;
+            border-bottom: 1px solid #d0d7e2;
+            padding-bottom: 0.5rem;
+        }
+        .edit-group {
+            margin-bottom: 1rem;
+        }
+        .edit-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #3d506b;
+            margin-bottom: 0.2rem;
+        }
+        .edit-group input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        .edit-group input:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .edit-group .inline {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .edit-group .inline input {
+            flex: 1;
+        }
+
+        /* Calculadora (input y resultados) */
+        .input-section {
+            background: linear-gradient(135deg, #faf8f5, #f5f3f0);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
         .input-section::before {
             content: '';
             position: absolute;
@@ -134,51 +141,42 @@
             top: 0;
             bottom: 0;
             width: 4px;
-            background: linear-gradient(180deg, #c9a84c 0%, #1a2a3a 100%);
-            border-radius: 18px 0 0 18px;
+            background: linear-gradient(180deg, #c9a84c, #1a2a3a);
+            border-radius: 16px 0 0 16px;
         }
-
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
-
         .input-group label {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
             font-weight: 600;
-            color: #1a2a3a;
+            font-size: 1.1rem;
         }
-
         .input-wrapper {
             display: flex;
             align-items: center;
             gap: 0.8rem;
             flex-wrap: wrap;
         }
-
         .input-wrapper input {
             flex: 1;
-            padding: 1rem 1.2rem;
-            font-size: 1.2rem;
+            padding: 0.8rem 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border: 2px solid rgba(26, 42, 58, 0.15);
             border-radius: 12px;
             background: white;
-            color: #1a2a3a;
-            transition: all 0.3s;
             text-align: center;
             width: 120px;
             min-width: 80px;
         }
-
         .input-wrapper input:focus {
             outline: none;
             border-color: #c9a84c;
             box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.15);
         }
-
         .input-wrapper input[type="number"] {
             -moz-appearance: textfield;
         }
@@ -187,15 +185,14 @@
             -webkit-appearance: none;
             margin: 0;
         }
-
         .stepper-btn {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: white;
             border: 2px solid #d0d7e2;
             color: #1a2a3a;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -204,173 +201,98 @@
             justify-content: center;
             flex-shrink: 0;
         }
-
         .stepper-btn:hover {
             border-color: #c9a84c;
             background: rgba(201, 168, 76, 0.08);
         }
 
-        .stepper-btn:active {
-            transform: scale(0.95);
-        }
-
-        .input-hint {
-            font-size: 0.85rem;
-            color: #7a8fa3;
-            margin-top: 0.3rem;
-            font-weight: 500;
-        }
-
-        /* ===== RESULTADOS ===== */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.8rem;
-            margin: 2.5rem 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
-
         .result-card {
             background: white;
             border: 1px solid rgba(201, 168, 76, 0.15);
-            border-radius: 16px;
-            padding: 1.8rem;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            border-radius: 14px;
+            padding: 1.2rem;
         }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #c9a84c 0%, transparent 100%);
-        }
-
-        .result-card:hover {
-            box-shadow: 0 12px 32px rgba(26, 42, 58, 0.08);
-            transform: translateY(-2px);
-        }
-
         .result-card.highlight {
-            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, rgba(201, 168, 76, 0.04) 100%);
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.04));
             border-color: #c9a84c;
         }
-
-        .result-card.highlight::before {
-            background: linear-gradient(90deg, #c9a84c 0%, #1a2a3a 100%);
-        }
-
         .result-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             color: #7a8fa3;
             font-weight: 700;
-            margin-bottom: 0.8rem;
+            letter-spacing: 0.5px;
         }
-
         .result-value {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #1a2a3a;
-            line-height: 1.1;
-            margin-bottom: 0.6rem;
         }
-
         .result-value small {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #7a8fa3;
-            margin-left: 0.4rem;
-            font-family: 'Inter', sans-serif;
         }
-
         .result-sub {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #5a6f8f;
-            padding-top: 0.8rem;
             border-top: 1px solid rgba(201, 168, 76, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
         }
 
-        /* ===== INFO BOX ===== */
         .info-box {
-            background: linear-gradient(135deg, rgba(26, 42, 58, 0.02) 0%, rgba(201, 168, 76, 0.08) 100%);
-            border: 1px solid rgba(201, 168, 76, 0.25);
-            border-radius: 16px;
-            padding: 1.6rem;
-            margin: 2rem 0;
-            position: relative;
-            padding-left: 2rem;
+            background: #f4f8fe;
+            border-left: 5px solid #1a2b3c;
+            padding: 1rem 1.2rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1rem 0;
         }
-
-        .info-box::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, #c9a84c 0%, #1a2a3a 100%);
-            border-radius: 16px 0 0 16px;
-        }
-
-        .info-box-title {
+        .info-box .title {
             font-weight: 700;
-            color: #1a2a3a;
-            font-size: 0.95rem;
-            margin-bottom: 0.4rem;
         }
-
-        .info-box-content {
-            font-size: 0.9rem;
-            color: #5a6f8f;
-            line-height: 1.6;
-        }
-
-        .info-box-warning {
+        .info-box .warning {
             font-size: 0.8rem;
             color: #7a8fa3;
-            margin-top: 0.6rem;
+            margin-top: 0.4rem;
             font-style: italic;
         }
 
-        /* ===== BOTÓN PDF ===== */
+        /* Botones */
         .btn-pdf {
             width: 100%;
-            padding: 1.2rem;
-            margin-top: 1.5rem;
-            background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2f 100%);
+            padding: 1rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #1a2a3a, #0f1e2f);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
-            font-family: 'Inter', sans-serif;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.8rem;
-            letter-spacing: 0.3px;
+            gap: 0.6rem;
             box-shadow: 0 8px 20px rgba(26, 42, 58, 0.2);
         }
-
         .btn-pdf:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(26, 42, 58, 0.25);
         }
-
         .btn-pdf:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
         .spinner {
             display: inline-block;
             width: 20px;
@@ -380,138 +302,201 @@
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
-
         @keyframes spin {
             to {
                 transform: rotate(360deg);
             }
         }
 
-        /* ===== FOOTER ===== */
-        .footer-text {
-            font-size: 0.8rem;
-            color: #7a8fa3;
-            text-align: center;
+        /* Vista previa del PDF */
+        .preview-section {
             margin-top: 2rem;
+            border-top: 2px dashed #d0d7e2;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .preview-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .preview-container {
+            background: white;
+            border: 1px solid #d0d7e2;
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+        .preview-container #pdf-preview {
+            font-family: 'Times New Roman', Times, serif;
+            color: #1a2a3a;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+        }
+        .preview-container #pdf-preview h1,
+        .preview-container #pdf-preview h2 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .preview-container #pdf-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.5rem 0;
+        }
+        .preview-container #pdf-preview th,
+        .preview-container #pdf-preview td {
+            border: 1px solid #c8d2e0;
+            padding: 0.4rem 0.6rem;
+            text-align: left;
+        }
+        .preview-container #pdf-preview th {
+            background: #eef3fa;
+        }
+        .preview-container #pdf-preview .nota {
+            background: #f4f8fe;
+            padding: 0.6rem 1rem;
+            border-left: 5px solid #1a2b3c;
+        }
+        .preview-container #pdf-preview .condiciones {
+            list-style: none;
+            padding: 0;
+        }
+        .preview-container #pdf-preview .condiciones li {
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #e2eaf5;
         }
 
-        /* ===== RESPONSIVE ===== */
+        .footer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            margin-top: 1rem;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+            padding-top: 1rem;
+        }
+
         @media (max-width: 768px) {
             .container {
-                padding: 2rem 1.5rem;
-            }
-            .header-titles h1 {
-                font-size: 2rem;
+                padding: 1.5rem;
             }
             .results-grid {
                 grid-template-columns: 1fr;
             }
-            .input-section {
-                padding: 1.5rem;
-            }
-            .result-value {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1.5rem;
-            }
-            .header-main {
-                flex-wrap: wrap;
-                gap: 0.8rem;
+            .row {
+                flex-direction: column;
             }
             .header-titles h1 {
-                font-size: 1.6rem;
-            }
-            .club-icon {
-                font-size: 2.5rem;
-            }
-            .result-value {
-                font-size: 1.6rem;
-            }
-            .btn-pdf {
-                font-size: 0.95rem;
-                padding: 1rem;
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
-
 <body>
     <div class="container">
 
-        <!-- ===== ENCABEZADO ===== -->
+        <!-- ENCABEZADO -->
         <div class="header-wrapper">
-            <div class="header-main">
-                <span class="club-icon">♟️</span>
-                <div class="header-titles">
-                    <h1><span class="club-name">Club Morphyy</span></h1>
-                    <div class="header-subtitle">
-                        Calculadora de Tarifas · <span class="badge">Tarifas 2026</span>
+            <span class="club-icon">♟️</span>
+            <div class="header-titles">
+                <h1><span class="club-name">Club Morphyy</span></h1>
+                <div>Calculadora de Tarifas · <span class="badge">Tarifas 2026</span></div>
+            </div>
+        </div>
+
+        <!-- FILA: Panel de edición + Calculadora -->
+        <div class="row">
+            <!-- Columna izquierda: Edición de datos -->
+            <div class="col">
+                <div class="edit-panel">
+                    <h3>✏️ Datos de la cotización</h3>
+                    <div class="edit-group">
+                        <label>Día de la clase</label>
+                        <input type="text" id="editDia" value="Jueves" />
+                    </div>
+                    <div class="edit-group">
+                        <label>Horario</label>
+                        <div class="inline">
+                            <input type="time" id="editInicio" value="14:00" />
+                            <span style="align-self:center;">a</span>
+                            <input type="time" id="editFin" value="16:00" />
+                        </div>
+                    </div>
+                    <div class="edit-group">
+                        <label>Nombre de contacto</label>
+                        <input type="text" id="editNombre" value="[Tu Nombre]" />
+                    </div>
+                    <div class="edit-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="editTelefono" value="[Tu teléfono]" />
+                    </div>
+                    <div class="edit-group">
+                        <label>Correo electrónico</label>
+                        <input type="text" id="editCorreo" value="[Tu correo]" />
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ===== INPUT ===== -->
-        <div class="input-section">
-            <div class="input-group">
-                <label for="alumnosInput">Número de alumnos por grupo</label>
-                <div class="input-wrapper">
-                    <button class="stepper-btn" id="decrementBtn" aria-label="Disminuir">−</button>
-                    <input type="number" id="alumnosInput" min="1" max="30" value="15" />
-                    <button class="stepper-btn" id="incrementBtn" aria-label="Aumentar">+</button>
-                    <span style="font-size:0.9rem; color:#7a8fa3; font-weight:500;">(1 – 30)</span>
+            <!-- Columna derecha: Calculadora -->
+            <div class="col">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="alumnosInput">Número de alumnos por grupo</label>
+                        <div class="input-wrapper">
+                            <button class="stepper-btn" id="decrementBtn">−</button>
+                            <input type="number" id="alumnosInput" min="1" max="30" value="15" />
+                            <button class="stepper-btn" id="incrementBtn">+</button>
+                            <span style="font-size:0.85rem; color:#7a8fa3;">(1 – 30)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-hint">↳ Ajusta el número para calcular el costo</div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">💰 Costo Total</div>
+                        <div class="result-value" id="totalDisplay">$375.00</div>
+                        <div class="result-sub" id="rangoDisplay">15 – 20 alumnos</div>
+                    </div>
+                    <div class="result-card highlight">
+                        <div class="result-label">🧑‍🎓 Costo por Alumno</div>
+                        <div class="result-value" id="porAlumnoDisplay">$25.00 <small>c/u</small></div>
+                        <div class="result-sub" id="detalleDisplay">Tarifa vigente</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="title">✓ Tarifa Aplicada</div>
+                    <div id="tarifaDescDisplay">15 a 20 → $25.00 c/u</div>
+                    <div class="warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
+                </div>
+
+                <button class="btn-pdf" id="pdfBtn">📄 Descargar Cotización en PDF</button>
             </div>
         </div>
 
-        <!-- ===== RESULTADOS ===== -->
-        <div class="results-grid">
-            <div class="result-card">
-                <div class="result-label">💰 Costo Total por Clase</div>
-                <div class="result-value" id="totalDisplay">$375.00</div>
-                <div class="result-sub" id="rangoDisplay">15 – 20 alumnos</div>
-            </div>
-            <div class="result-card highlight">
-                <div class="result-label">🧑‍🎓 Costo por Alumno</div>
-                <div class="result-value" id="porAlumnoDisplay">$25.00 <small>c/u</small></div>
-                <div class="result-sub" id="detalleDisplay">Tarifa vigente</div>
+        <!-- VISTA PREVIA DEL PDF -->
+        <div class="preview-section">
+            <h3>👁️ Vista previa del PDF</h3>
+            <div class="preview-container">
+                <div id="pdf-preview"></div>
             </div>
         </div>
 
-        <!-- ===== INFO BOX ===== -->
-        <div class="info-box">
-            <div class="info-box-title">✓ Tarifa Aplicada</div>
-            <div class="info-box-content" id="tarifaDescDisplay">15 a 20 → $25.00 c/u</div>
-            <div class="info-box-warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
-        </div>
-
-        <!-- ===== BOTÓN PDF ===== -->
-        <button class="btn-pdf" id="pdfBtn">
-            📄 Descargar Cotización en PDF
-        </button>
-
-        <!-- ===== FOOTER ===== -->
-        <div class="footer-text">
-            Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).
-        </div>
+        <div class="footer-text">Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).</div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
+    <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
         (function() {
             'use strict';
 
             // ---- Referencias DOM ----
-            const input = document.getElementById('alumnosInput');
+            const inputAlumnos = document.getElementById('alumnosInput');
             const totalDisplay = document.getElementById('totalDisplay');
             const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
             const rangoDisplay = document.getElementById('rangoDisplay');
@@ -521,11 +506,20 @@
             const decrementBtn = document.getElementById('decrementBtn');
             const incrementBtn = document.getElementById('incrementBtn');
 
+            // Campos editables
+            const editDia = document.getElementById('editDia');
+            const editInicio = document.getElementById('editInicio');
+            const editFin = document.getElementById('editFin');
+            const editNombre = document.getElementById('editNombre');
+            const editTelefono = document.getElementById('editTelefono');
+            const editCorreo = document.getElementById('editCorreo');
+
+            const previewContainer = document.getElementById('pdf-preview');
+
             // ---- Función de cálculo ----
             function calcular(n) {
                 n = Math.min(30, Math.max(1, n));
                 let total, porAlumno, rango, detalle, tarifaDesc;
-
                 if (n < 15) {
                     total = 350;
                     porAlumno = n > 0 ? total / n : 0;
@@ -548,12 +542,12 @@
                 return { total, porAlumno, rango, detalle, tarifaDesc };
             }
 
-            // ---- Actualizar UI ----
-            function actualizar() {
-                let n = parseInt(input.value, 10);
+            // ---- Actualizar UI y vista previa ----
+            function actualizarTodo() {
+                let n = parseInt(inputAlumnos.value, 10);
                 if (isNaN(n) || n < 1) n = 1;
                 if (n > 30) n = 30;
-                input.value = n;
+                inputAlumnos.value = n;
 
                 const res = calcular(n);
                 totalDisplay.textContent = `$${res.total.toFixed(2)}`;
@@ -561,59 +555,26 @@
                 rangoDisplay.textContent = res.rango;
                 detalleDisplay.textContent = res.detalle;
                 tarifaDescDisplay.textContent = res.tarifaDesc;
+
+                // Actualizar vista previa del PDF
+                actualizarPreview(n, res);
             }
 
-            // ---- Eventos ----
-            input.addEventListener('input', function() {
-                let val = parseInt(this.value, 10);
-                if (!isNaN(val) && val > 30) this.value = 30;
-                if (!isNaN(val) && val < 1) this.value = 1;
-                actualizar();
-            });
-
-            input.addEventListener('change', function() {
-                let val = parseInt(this.value, 10);
-                if (isNaN(val) || val < 1) this.value = 1;
-                if (val > 30) this.value = 30;
-                actualizar();
-            });
-
-            decrementBtn.addEventListener('click', function() {
-                let val = parseInt(input.value, 10);
-                if (isNaN(val) || val <= 1) return;
-                input.value = val - 1;
-                actualizar();
-            });
-
-            incrementBtn.addEventListener('click', function() {
-                let val = parseInt(input.value, 10);
-                if (isNaN(val) || val >= 30) return;
-                input.value = val + 1;
-                actualizar();
-            });
-
-            actualizar();
-
-            // ============================================================
-            // ===== GENERACIÓN DE PDF (con html2canvas + jspdf) =====
-            // ============================================================
-            pdfBtn.addEventListener('click', function() {
-                pdfBtn.disabled = true;
-                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
-
-                const n = parseInt(input.value, 10) || 15;
-                const res = calcular(n);
+            // ---- Generar HTML de la vista previa (y del PDF) ----
+            function generarContenidoPDF(n, res) {
+                const dia = editDia.value || 'Jueves';
+                const inicio = editInicio.value || '14:00';
+                const fin = editFin.value || '16:00';
+                const nombre = editNombre.value || '[Tu Nombre]';
+                const telefono = editTelefono.value || '[Tu teléfono]';
+                const correo = editCorreo.value || '[Tu correo]';
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    year: 'numeric', month: 'long', day: 'numeric'
                 });
 
-                // --- Construir el contenido del PDF (informe detallado) ---
-                const contenido = `
-                <div id="pdf-content" style="font-family: 'Times New Roman', Times, serif; padding: 40px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
-                    <!-- Encabezado -->
-                    <div style="display: flex; align-items: center; gap: 1.2rem; border-bottom: 3px double #1a2b3c; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                return `
+                <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
+                    <div style="display: flex; align-items: center; gap: 1.2rem; border-bottom: 3px double #1a2b3c; padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
                         <span style="font-size: 3.5rem;">♟️</span>
                         <div>
                             <h1 style="font-size: 2.2rem; margin: 0; letter-spacing: 1px; color: #0f1e2f;">CLUB MORPHYY</h1>
@@ -621,16 +582,13 @@
                         </div>
                     </div>
 
-                    <!-- Fecha -->
                     <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
                         <strong>Fecha de cotización:</strong> ${fechaStr}
                     </div>
 
-                    <!-- 1. Horario -->
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
-                    <p><strong>Día:</strong> Jueves · <strong>Horario:</strong> 14:00 a 16:00 hrs.</p>
+                    <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
 
-                    <!-- 2. Tabla de tarifas -->
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
                     <p><strong>Número de alumnos considerados para esta cotización:</strong> ${n}</p>
                     <table style="width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;">
@@ -660,7 +618,6 @@
                         </tbody>
                     </table>
 
-                    <!-- Resumen de la tarifa aplicada -->
                     <div style="background: #f4f8fe; padding: 1rem 1.2rem; border-left: 5px solid #1a2b3c; margin: 1.2rem 0;">
                         <strong>✓ Tarifa aplicada a su grupo:</strong> ${res.tarifaDesc}
                         <br>
@@ -668,7 +625,6 @@
                         Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
                     </div>
 
-                    <!-- 3. Condiciones generales -->
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">3. Condiciones generales</h2>
                     <ul style="list-style: none; padding: 0;">
                         <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
@@ -682,15 +638,60 @@
                         </li>
                     </ul>
 
-                    <!-- Pie de página -->
                     <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b; font-size: 0.9rem;">
-                        <p><strong>Contacto:</strong> [Tu Nombre] · [Tu teléfono] · [Tu correo electrónico]</p>
+                        <p><strong>Contacto:</strong> ${nombre} · ${telefono} · ${correo}</p>
                         <p style="font-size: 0.8rem; color: #6a7b96;">Esta cotización tiene una vigencia de 15 días naturales.</p>
                     </div>
                 </div>
                 `;
+            }
 
-                // ---- Crear contenedor temporal visible (opacidad 0) ----
+            function actualizarPreview(n, res) {
+                const html = generarContenidoPDF(n, res);
+                previewContainer.innerHTML = html;
+            }
+
+            // ---- Eventos de los campos editables ----
+            [editDia, editInicio, editFin, editNombre, editTelefono, editCorreo].forEach(el => {
+                el.addEventListener('input', actualizarTodo);
+            });
+
+            // ---- Eventos del input de alumnos ----
+            inputAlumnos.addEventListener('input', function() {
+                let val = parseInt(this.value, 10);
+                if (!isNaN(val) && val > 30) this.value = 30;
+                if (!isNaN(val) && val < 1) this.value = 1;
+                actualizarTodo();
+            });
+            inputAlumnos.addEventListener('change', function() {
+                let val = parseInt(this.value, 10);
+                if (isNaN(val) || val < 1) this.value = 1;
+                if (val > 30) this.value = 30;
+                actualizarTodo();
+            });
+            decrementBtn.addEventListener('click', function() {
+                let val = parseInt(inputAlumnos.value, 10);
+                if (isNaN(val) || val <= 1) return;
+                inputAlumnos.value = val - 1;
+                actualizarTodo();
+            });
+            incrementBtn.addEventListener('click', function() {
+                let val = parseInt(inputAlumnos.value, 10);
+                if (isNaN(val) || val >= 30) return;
+                inputAlumnos.value = val + 1;
+                actualizarTodo();
+            });
+
+            // ---- Generación de PDF (usando la vista previa) ----
+            pdfBtn.addEventListener('click', function() {
+                pdfBtn.disabled = true;
+                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
+
+                const n = parseInt(inputAlumnos.value, 10) || 15;
+                const res = calcular(n);
+                const contenido = generarContenidoPDF(n, res);
+
+                // Crear contenedor temporal
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = contenido;
                 tempDiv.style.position = 'fixed';
@@ -706,11 +707,10 @@
                 tempDiv.style.pointerEvents = 'none';
                 document.body.appendChild(tempDiv);
 
-                // Esperar a que el DOM se renderice
                 setTimeout(() => {
-                    const pdfContent = document.getElementById('pdf-content');
+                    const pdfContent = tempDiv.querySelector('div'); // el div interior
                     if (!pdfContent) {
-                        alert('Error: no se pudo generar el contenido del PDF.');
+                        alert('Error al generar el contenido del PDF.');
                         document.body.removeChild(tempDiv);
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
@@ -747,8 +747,9 @@
                 }, 400);
             });
 
+            // ---- Inicializar ----
+            actualizarTodo();
         })();
     </script>
-
 </body>
 </html>
