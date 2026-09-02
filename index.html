@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Tarifas - Club de Ajedrez</title>
+    <title>Club Morphyy - Calculadora de Tarifas</title>
 
     <!-- Fuentes Google -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- html2pdf.js (para generar PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer">
-    </script>
+    <!-- Librerías para PDF (html2canvas + jspdf) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* ===== RESET Y ESTILOS BASE ===== */
+        /* ===== RESET Y ESTILOS GENERALES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -21,7 +21,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
             padding: 2rem 1rem;
             display: flex;
@@ -37,13 +37,12 @@
             background: white;
             border-radius: 24px;
             padding: 3rem 2.5rem;
-            box-shadow: 0 20px 60px rgba(26, 42, 58, 0.08), 0 8px 24px rgba(26, 42, 58, 0.04);
+            box-shadow: 0 20px 60px rgba(26, 42, 58, 0.08);
             border: 1px solid rgba(201, 168, 76, 0.1);
             position: relative;
             overflow: hidden;
         }
 
-        /* Decoración de fondo */
         .container::before {
             content: '';
             position: absolute;
@@ -78,30 +77,29 @@
             display: flex;
             align-items: center;
             gap: 1.8rem;
-            margin-bottom: 1rem;
         }
 
-        /* Logo en Base64 (ejemplo) – reemplázalo con tu logo real */
-        .logo {
-            height: 70px;
-            width: auto;
-            flex-shrink: 0;
-            filter: drop-shadow(0 4px 12px rgba(26, 42, 58, 0.1));
-            /* Si no tienes logo, usa un texto o un emoji */
+        .club-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 12px rgba(201, 168, 76, 0.3));
         }
 
         .header-titles h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.4rem;
+            font-size: 2.6rem;
             font-weight: 700;
             color: #1a2a3a;
             letter-spacing: -0.5px;
             line-height: 1.1;
-            margin-bottom: 0.4rem;
+        }
+
+        .header-titles .club-name {
+            color: #c9a84c;
         }
 
         .header-subtitle {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #5a6f8f;
             font-weight: 500;
         }
@@ -157,6 +155,7 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
+            flex-wrap: wrap;
         }
 
         .input-wrapper input {
@@ -168,10 +167,10 @@
             border-radius: 12px;
             background: white;
             color: #1a2a3a;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
             text-align: center;
             width: 120px;
+            min-width: 80px;
         }
 
         .input-wrapper input:focus {
@@ -235,7 +234,7 @@
             border: 1px solid rgba(201, 168, 76, 0.15);
             border-radius: 16px;
             padding: 1.8rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
@@ -252,7 +251,6 @@
 
         .result-card:hover {
             box-shadow: 0 12px 32px rgba(26, 42, 58, 0.08);
-            border-color: rgba(201, 168, 76, 0.25);
             transform: translateY(-2px);
         }
 
@@ -353,7 +351,7 @@
             font-weight: 600;
             font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -365,11 +363,6 @@
         .btn-pdf:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(26, 42, 58, 0.25);
-            background: linear-gradient(135deg, #0f1e2f 0%, #051120 100%);
-        }
-
-        .btn-pdf:active:not(:disabled) {
-            transform: translateY(0);
         }
 
         .btn-pdf:disabled {
@@ -402,16 +395,12 @@
             margin-top: 2rem;
             padding-top: 1.5rem;
             border-top: 1px solid rgba(201, 168, 76, 0.15);
-            letter-spacing: 0.2px;
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .container {
                 padding: 2rem 1.5rem;
-            }
-            .header-main {
-                gap: 1rem;
             }
             .header-titles h1 {
                 font-size: 2rem;
@@ -425,23 +414,11 @@
             .result-value {
                 font-size: 1.8rem;
             }
-            .input-wrapper {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .input-wrapper input {
-                width: 100%;
-                max-width: 160px;
-            }
         }
 
         @media (max-width: 480px) {
             .container {
                 padding: 1.5rem;
-                border-radius: 16px;
-            }
-            body {
-                padding: 1rem;
             }
             .header-main {
                 flex-wrap: wrap;
@@ -450,11 +427,8 @@
             .header-titles h1 {
                 font-size: 1.6rem;
             }
-            .header-titles {
-                width: 100%;
-            }
-            .logo {
-                height: 50px;
+            .club-icon {
+                font-size: 2.5rem;
             }
             .result-value {
                 font-size: 1.6rem;
@@ -473,18 +447,11 @@
         <!-- ===== ENCABEZADO ===== -->
         <div class="header-wrapper">
             <div class="header-main">
-                <!--
-                    ⚠️ Reemplaza este SVG/Base64 con tu logo real.
-                    Puedes usar una imagen en Base64 o una URL.
-                    Si no tienes logo, puedes dejar el texto "♟️" o el emoji.
-                -->
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23c9a84c'/%3E%3Ctext x='50%25' y='55%25' font-size='80' font-family='Arial' fill='white' text-anchor='middle' dominant-baseline='central'%3E♟%3C/text%3E%3C/svg%3E"
-                alt="Logo del Club" class="logo" id="logoImg" />
-
+                <span class="club-icon">♟️</span>
                 <div class="header-titles">
-                    <h1>♟️ Calculadora de Tarifas</h1>
+                    <h1><span class="club-name">Club Morphyy</span></h1>
                     <div class="header-subtitle">
-                        Clases de Ajedrez · <span class="badge">Tarifas 2026</span>
+                        Calculadora de Tarifas · <span class="badge">Tarifas 2026</span>
                     </div>
                 </div>
             </div>
@@ -493,25 +460,25 @@
         <!-- ===== INPUT ===== -->
         <div class="input-section">
             <div class="input-group">
-                <label for="alumnosInput">Número de alumnos</label>
+                <label for="alumnosInput">Número de alumnos por grupo</label>
                 <div class="input-wrapper">
                     <button class="stepper-btn" id="decrementBtn" aria-label="Disminuir">−</button>
                     <input type="number" id="alumnosInput" min="1" max="30" value="15" />
                     <button class="stepper-btn" id="incrementBtn" aria-label="Aumentar">+</button>
                     <span style="font-size:0.9rem; color:#7a8fa3; font-weight:500;">(1 – 30)</span>
                 </div>
-                <div class="input-hint">↳ Ajusta el número de alumnos para calcular el costo</div>
+                <div class="input-hint">↳ Ajusta el número para calcular el costo</div>
             </div>
         </div>
 
         <!-- ===== RESULTADOS ===== -->
         <div class="results-grid">
-            <div class="result-card" id="cardTotal">
+            <div class="result-card">
                 <div class="result-label">💰 Costo Total por Clase</div>
                 <div class="result-value" id="totalDisplay">$375.00</div>
                 <div class="result-sub" id="rangoDisplay">15 – 20 alumnos</div>
             </div>
-            <div class="result-card highlight" id="cardPorAlumno">
+            <div class="result-card highlight">
                 <div class="result-label">🧑‍🎓 Costo por Alumno</div>
                 <div class="result-value" id="porAlumnoDisplay">$25.00 <small>c/u</small></div>
                 <div class="result-sub" id="detalleDisplay">Tarifa vigente</div>
@@ -519,7 +486,7 @@
         </div>
 
         <!-- ===== INFO BOX ===== -->
-        <div class="info-box" id="infoBox">
+        <div class="info-box">
             <div class="info-box-title">✓ Tarifa Aplicada</div>
             <div class="info-box-content" id="tarifaDescDisplay">15 a 20 → $25.00 c/u</div>
             <div class="info-box-warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
@@ -532,12 +499,12 @@
 
         <!-- ===== FOOTER ===== -->
         <div class="footer-text">
-            Los precios son por grupo y por clase (1 o 2 horas). Aplican condiciones generales.
+            Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).
         </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT (Toda la lógica) ===== -->
+    <!-- ===== JAVASCRIPT ===== -->
     <!-- ============================================================ -->
     <script>
         (function() {
@@ -553,7 +520,6 @@
             const pdfBtn = document.getElementById('pdfBtn');
             const decrementBtn = document.getElementById('decrementBtn');
             const incrementBtn = document.getElementById('incrementBtn');
-            const logoImg = document.getElementById('logoImg');
 
             // ---- Función de cálculo ----
             function calcular(n) {
@@ -590,7 +556,6 @@
                 input.value = n;
 
                 const res = calcular(n);
-
                 totalDisplay.textContent = `$${res.total.toFixed(2)}`;
                 porAlumnoDisplay.innerHTML = `$${res.porAlumno.toFixed(2)} <small>c/u</small>`;
                 rangoDisplay.textContent = res.rango;
@@ -598,7 +563,7 @@
                 tarifaDescDisplay.textContent = res.tarifaDesc;
             }
 
-            // ---- Eventos del input ----
+            // ---- Eventos ----
             input.addEventListener('input', function() {
                 let val = parseInt(this.value, 10);
                 if (!isNaN(val) && val > 30) this.value = 30;
@@ -613,7 +578,6 @@
                 actualizar();
             });
 
-            // ---- Botones stepper ----
             decrementBtn.addEventListener('click', function() {
                 let val = parseInt(input.value, 10);
                 if (isNaN(val) || val <= 1) return;
@@ -628,252 +592,163 @@
                 actualizar();
             });
 
-            // ---- Inicializar ----
             actualizar();
 
             // ============================================================
-            // ===== GENERACIÓN DE PDF (con logo incrustado) =====
+            // ===== GENERACIÓN DE PDF (con html2canvas + jspdf) =====
             // ============================================================
             pdfBtn.addEventListener('click', function() {
+                pdfBtn.disabled = true;
+                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
+
                 const n = parseInt(input.value, 10) || 15;
                 const res = calcular(n);
-                const logoSrc = logoImg.src; // toma el src del logo (puede ser Base64)
-
-                // Fecha
-                const hoy = new Date();
-                const fechaStr = hoy.toLocaleDateString('es-MX', {
+                const fechaStr = new Date().toLocaleDateString('es-MX', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
 
-                // Construir HTML del PDF
-                const contenidoPDF = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Cotización - Clases de Ajedrez</title>
-                    <style>
-                        body {
-                            font-family: 'Times New Roman', Times, serif;
-                            margin: 1.8cm 1.5cm;
-                            color: #1e2a3a;
-                            line-height: 1.6;
-                        }
-                        .header-pdf {
-                            display: flex;
-                            align-items: center;
-                            gap: 1.2rem;
-                            border-bottom: 3px double #1a2b3c;
-                            padding-bottom: 0.8rem;
-                            margin-bottom: 1.8rem;
-                        }
-                        .header-pdf .logo-pdf {
-                            height: 65px;
-                            width: auto;
-                            flex-shrink: 0;
-                        }
-                        .header-pdf .titulos-pdf h1 {
-                            font-size: 1.9rem;
-                            letter-spacing: 1px;
-                            margin: 0;
-                            color: #0f1e2f;
-                        }
-                        .header-pdf .titulos-pdf p {
-                            font-size: 1rem;
-                            color: #3d506b;
-                            margin: 0.2rem 0 0;
-                        }
-                        .fecha {
-                            text-align: right;
-                            font-size: 0.95rem;
-                            margin-bottom: 1.5rem;
-                            color: #3d506b;
-                        }
-                        .seccion {
-                            margin-bottom: 1.8rem;
-                        }
-                        .seccion h2 {
-                            font-size: 1.2rem;
-                            color: #0f1e2f;
-                            border-bottom: 1px solid #d0d9e6;
-                            padding-bottom: 0.3rem;
-                            margin-bottom: 0.8rem;
-                            font-weight: 600;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin: 1rem 0;
-                            font-size: 0.95rem;
-                        }
-                        th {
-                            background: #eef3fa;
-                            text-align: left;
-                            padding: 0.6rem 0.8rem;
-                            border: 1px solid #c8d2e0;
-                            font-weight: 700;
-                            color: #0f1e2f;
-                        }
-                        td {
-                            padding: 0.6rem 0.8rem;
-                            border: 1px solid #c8d2e0;
-                        }
-                        .total-row {
-                            background: #f8faff;
-                            font-weight: 600;
-                        }
-                        .nota {
-                            background: #f4f8fe;
-                            padding: 0.8rem 1.2rem;
-                            border-left: 5px solid #1a2b3c;
-                            margin: 1.2rem 0;
-                            font-size: 0.95rem;
-                        }
-                        .condiciones {
-                            list-style: none;
-                            padding: 0;
-                        }
-                        .condiciones li {
-                            padding: 0.3rem 0;
-                            border-bottom: 1px dashed #e2eaf5;
-                        }
-                        .footer {
-                            margin-top: 2.5rem;
-                            padding-top: 1rem;
-                            border-top: 2px solid #d0d9e6;
-                            text-align: center;
-                            font-size: 0.9rem;
-                            color: #3d506b;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header-pdf">
-                        <img src="${logoSrc}" alt="Logo del Club" class="logo-pdf" />
-                        <div class="titulos-pdf">
-                            <h1>♟️ PROPUESTA DE SERVICIOS</h1>
-                            <p>Clases de Ajedrez · Tarifas 2026</p>
+                // --- Construir el contenido del PDF (informe detallado) ---
+                const contenido = `
+                <div id="pdf-content" style="font-family: 'Times New Roman', Times, serif; padding: 40px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
+                    <!-- Encabezado -->
+                    <div style="display: flex; align-items: center; gap: 1.2rem; border-bottom: 3px double #1a2b3c; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <span style="font-size: 3.5rem;">♟️</span>
+                        <div>
+                            <h1 style="font-size: 2.2rem; margin: 0; letter-spacing: 1px; color: #0f1e2f;">CLUB MORPHYY</h1>
+                            <p style="margin: 0; color: #3d506b; font-size: 1.1rem;">Clases de Ajedrez · Tarifas 2026</p>
                         </div>
                     </div>
 
-                    <div class="fecha">
-                        <strong>Fecha:</strong> ${fechaStr}
+                    <!-- Fecha -->
+                    <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
+                        <strong>Fecha de cotización:</strong> ${fechaStr}
                     </div>
 
-                    <div class="seccion">
-                        <h2>1. Horario propuesto</h2>
-                        <p><strong>Día:</strong> Jueves · <strong>Horario:</strong> 14:00 a 16:00 hrs.</p>
+                    <!-- 1. Horario -->
+                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
+                    <p><strong>Día:</strong> Jueves · <strong>Horario:</strong> 14:00 a 16:00 hrs.</p>
+
+                    <!-- 2. Tabla de tarifas -->
+                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
+                    <p><strong>Número de alumnos considerados para esta cotización:</strong> ${n}</p>
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;">
+                        <thead>
+                            <tr style="background: #eef3fa;">
+                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Rango de alumnos</th>
+                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Costo total por clase</th>
+                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Costo por alumno</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>Menos de 15</strong></td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$350.00 MXN (fijo)</td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${n < 15 ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>15 a 20</strong></td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$375.00 a $500.00 MXN</td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${(n >= 15 && n <= 20) ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
+                            </tr>
+                            <tr style="background: #f8faff; font-weight: 600;">
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>21 a 30</strong></td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$500.00 MXN (cerrado)</td>
+                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${n >= 21 ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Resumen de la tarifa aplicada -->
+                    <div style="background: #f4f8fe; padding: 1rem 1.2rem; border-left: 5px solid #1a2b3c; margin: 1.2rem 0;">
+                        <strong>✓ Tarifa aplicada a su grupo:</strong> ${res.tarifaDesc}
+                        <br>
+                        <span style="font-size: 0.95rem;">Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · 
+                        Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
                     </div>
 
-                    <div class="seccion">
-                        <h2>2. Tabla de tarifas</h2>
-                        <p><strong>Alumnos considerados para esta cotización:</strong> ${n}</p>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rango de alumnos</th>
-                                    <th>Costo total por clase</th>
-                                    <th>Costo por alumno</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Menos de 15</strong></td>
-                                    <td>$350.00 MXN (fijo)</td>
-                                    <td>${n < 15 ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>15 a 20</strong></td>
-                                    <td>$375.00 a $500.00 MXN</td>
-                                    <td>${(n >= 15 && n <= 20) ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
-                                </tr>
-                                <tr class="total-row">
-                                    <td><strong>21 a 30</strong></td>
-                                    <td>$500.00 MXN (cerrado)</td>
-                                    <td>${n >= 21 ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- 3. Condiciones generales -->
+                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">3. Condiciones generales</h2>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
+                            <strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos (ej. 14-15 y 15-16), cada grupo paga su propia tarifa aplicando la tabla anterior. No se suman los alumnos para acceder al descuento.
+                        </li>
+                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
+                            <strong>Política de pago:</strong> El costo se define al inicio de cada periodo (ej. mensual) con base en los alumnos inscritos formalmente. El monto acordado no cambia por inasistencias puntuales.
+                        </li>
+                        <li style="padding: 0.4rem 0;">
+                            <strong>Bajas definitivas:</strong> Si durante el curso se producen bajas que reduzcan el grupo a un tramo inferior (ej. de 21-30 a 15-20, o de 15-20 a menos de 15), el precio se ajustará a la tarifa correspondiente <strong>a partir de la siguiente clase</strong>, beneficiando a ambas partes.
+                        </li>
+                    </ul>
 
-                        <div class="nota">
-                            <strong>✓ Tarifa aplicada a su grupo:</strong> ${res.tarifaDesc}
-                            <br />
-                            <span style="font-size:0.9rem;">Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · 
-                            Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
-                        </div>
+                    <!-- Pie de página -->
+                    <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b; font-size: 0.9rem;">
+                        <p><strong>Contacto:</strong> [Tu Nombre] · [Tu teléfono] · [Tu correo electrónico]</p>
+                        <p style="font-size: 0.8rem; color: #6a7b96;">Esta cotización tiene una vigencia de 15 días naturales.</p>
                     </div>
-
-                    <div class="seccion">
-                        <h2>3. Condiciones generales</h2>
-                        <ul class="condiciones">
-                            <li><strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos (ej. 14-15 y 15-16), cada grupo paga su propia tarifa aplicando la tabla anterior. No se suman los alumnos para acceder al descuento.</li>
-                            <li><strong>Política de pago y ajustes:</strong> El costo se define al inicio de cada periodo (ej. mensual) con base en los alumnos inscritos formalmente. El monto acordado no cambia por inasistencias puntuales.</li>
-                            <li><strong>Bajas definitivas:</strong> Si durante el curso se producen bajas que reduzcan el grupo a un tramo inferior, el precio se ajustará a la tarifa correspondiente a partir de la siguiente clase, beneficiando a ambas partes.</li>
-                        </ul>
-                    </div>
-
-                    <div class="footer">
-                        <p>
-                            <strong>Contacto:</strong> [Tu Nombre] · [Tu teléfono] · [Tu correo electrónico]
-                        </p>
-                        <p style="font-size:0.8rem; color:#6a7b96;">
-                            Esta cotización tiene una vigencia de 15 días naturales.
-                        </p>
-                    </div>
-                </body>
-                </html>
+                </div>
                 `;
 
-                // Deshabilitar botón mientras se genera
-                pdfBtn.disabled = true;
-                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
+                // ---- Crear contenedor temporal visible (opacidad 0) ----
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = contenido;
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.top = '0';
+                tempDiv.style.left = '0';
+                tempDiv.style.width = '100%';
+                tempDiv.style.height = '100%';
+                tempDiv.style.background = 'white';
+                tempDiv.style.zIndex = '10000';
+                tempDiv.style.overflow = 'auto';
+                tempDiv.style.padding = '20px';
+                tempDiv.style.opacity = '0';
+                tempDiv.style.pointerEvents = 'none';
+                document.body.appendChild(tempDiv);
 
-                // Crear elemento temporal para el PDF
-                const pdfDiv = document.createElement('div');
-                pdfDiv.innerHTML = contenidoPDF;
-                pdfDiv.style.position = 'absolute';
-                pdfDiv.style.left = '-9999px';
-                pdfDiv.style.top = '0';
-                document.body.appendChild(pdfDiv);
+                // Esperar a que el DOM se renderice
+                setTimeout(() => {
+                    const pdfContent = document.getElementById('pdf-content');
+                    if (!pdfContent) {
+                        alert('Error: no se pudo generar el contenido del PDF.');
+                        document.body.removeChild(tempDiv);
+                        pdfBtn.disabled = false;
+                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
+                        return;
+                    }
 
-                // Usar html2pdf
-                const opt = {
-                    margin: [0.7, 0.7, 0.7, 0.7],
-                    filename: 'Cotizacion_Ajedrez.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: {
+                    html2canvas(pdfContent, {
                         scale: 2,
                         useCORS: true,
                         letterRendering: true,
-                    },
-                    jsPDF: {
-                        unit: 'cm',
-                        format: 'letter',
-                        orientation: 'portrait'
-                    }
-                };
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        width: pdfContent.scrollWidth,
+                        height: pdfContent.scrollHeight,
+                    }).then((canvas) => {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF('p', 'mm', 'letter');
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                        pdf.save('Cotizacion_Club_Morphyy.pdf');
 
-                html2pdf()
-                    .set(opt)
-                    .from(pdfDiv)
-                    .save()
-                    .then(function() {
-                        document.body.removeChild(pdfDiv);
+                        document.body.removeChild(tempDiv);
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
-                    })
-                    .catch(function(err) {
-                        console.error('Error al generar PDF:', err);
-                        document.body.removeChild(pdfDiv);
+                    }).catch((err) => {
+                        console.error('Error en html2canvas:', err);
+                        document.body.removeChild(tempDiv);
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
-                        alert('Ocurrió un error al generar el PDF. Intente de nuevo.');
+                        alert('Error al generar el PDF: ' + err.message);
                     });
+                }, 400);
             });
 
         })();
     </script>
+
 </body>
 </html>
