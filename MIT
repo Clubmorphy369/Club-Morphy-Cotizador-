@@ -1,0 +1,29 @@
+
+---
+
+## 🖼️ Instrucciones para el logo
+
+1. Coloca tu logo en la carpeta `public/` con el nombre `logo.png`.
+2. Si tu logo tiene otro nombre o extensión, cambia la ruta en `page.tsx` (línea donde está `src="/logo.png"`).
+
+---
+
+## 🚀 Comandos para ejecutar y subir a GitHub
+
+```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Ejecutar en local (para probar)
+npm run dev
+
+# 3. Construir para producción
+npm run build
+
+# 4. Inicializar git y subir
+git init
+git add .
+git commit -m "Primera versión completa de la calculadora de tarifas"
+git branch -M main
+git remote add origin https://github.com/tu-usuario/tu-repositorio.git
+git push -u origin main
