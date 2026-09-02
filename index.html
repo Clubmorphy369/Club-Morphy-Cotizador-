@@ -1262,7 +1262,6 @@
                 });
                 solicitudesPendientes.innerHTML = html;
 
-                // Eventos aprobar/rechazar
                 document.querySelectorAll('.btn-aprobar').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -1293,9 +1292,8 @@
                 solicitud.estado = 'aprobada';
                 saveSolicitudes();
 
-                // Actualizar toda la interfaz sin recargar
                 actualizarTodo();
-                alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado y se actualizó el horario público.');
+                alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado.');
             }
 
             function rechazarSolicitud(idx) {
@@ -1514,7 +1512,8 @@
             });
 
             // ---- INICIALIZACIÓN ----
-            getStoredPassword(); // Asegura que existe la contraseña
+            // Asegurar que la contraseña predeterminada esté guardada
+            getStoredPassword();
             loadData();
             actualizarTodo();
 
