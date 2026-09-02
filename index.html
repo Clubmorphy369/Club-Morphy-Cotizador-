@@ -6,10 +6,8 @@
     <title>Club Morphyy - Gestión de Horarios y Tarifas</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         /* ===== RESET Y ESTILOS BASE ===== */
@@ -1169,7 +1167,9 @@
                         horarios[index].estado = selEstado.value;
                         horarios[index].escuela = inpEscuela.value;
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
-                        actualizarTodo();
+                        // Actualizar solo las vistas de usuario, no reconstruir el panel admin
+                        renderHorariosTabla();
+                        populateHorarioSelect();
                     };
 
                     selDia.addEventListener('change', actualizar);
@@ -1181,11 +1181,10 @@
                     btnEliminar.addEventListener('click', function() {
                         horarios.splice(index, 1);
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
-                        renderHorariosAdmin();
-                        actualizarTodo();
+                        actualizarTodo(); // Reconstruye todo sin recursión
                     });
                 });
-                actualizarTodo();
+                // No se llama a actualizarTodo() aquí para evitar bucle
             }
 
             // ---- RENDER TABLA HORARIOS (USUARIO) ----
