@@ -6,11 +6,18 @@
     <title>Club Morphyy - Gestión de Horarios y Tarifas</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== RESET Y ESTILOS BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
@@ -32,6 +39,7 @@
             position: relative;
         }
 
+        /* === BOTÓN ADMIN === */
         .admin-toggle {
             position: absolute;
             top: 1.2rem;
@@ -48,40 +56,111 @@
             opacity: 0.4;
             z-index: 10;
         }
-        .admin-toggle:hover { opacity: 1; border-color: #c9a84c; color: #1a2a3a; }
-        .admin-toggle.active { opacity: 1; border-color: #c9a84c; background: rgba(201,168,76,0.08); color: #1a2a3a; }
+        .admin-toggle:hover {
+            opacity: 1;
+            border-color: #c9a84c;
+            color: #1a2a3a;
+        }
+        .admin-toggle.active {
+            opacity: 1;
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.08);
+            color: #1a2a3a;
+        }
 
+        /* === MODAL DE CONTRASEÑA === */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             justify-content: center;
             align-items: center;
         }
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
         .modal-box {
             background: white;
             border-radius: 20px;
             padding: 2rem;
             max-width: 400px;
             width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
-        .modal-box h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.5rem; color: #1a2a3a; }
-        .modal-box p { color: #5a6f8f; margin-bottom: 1.5rem; font-size: 0.95rem; }
-        .modal-box input { width: 100%; padding: 0.8rem; border: 2px solid #d0d7e2; border-radius: 12px; font-size: 1rem; margin-bottom: 1rem; }
-        .modal-box input:focus { outline: none; border-color: #c9a84c; }
-        .modal-box .btn-modal { background: #1a2a3a; color: white; border: none; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin: 0 0.3rem; }
-        .modal-box .btn-modal:hover { background: #0f1e2f; }
-        .modal-box .btn-modal.cancel { background: #e0e4ea; color: #1a2a3a; }
-        .modal-box .btn-modal.cancel:hover { background: #d0d7e2; }
-        .modal-box .error-msg { color: #c0392b; font-size: 0.85rem; margin-top: -0.5rem; margin-bottom: 0.8rem; display: none; }
+        .modal-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1a2a3a;
+        }
+        .modal-box p {
+            color: #5a6f8f;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .modal-box .password-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .modal-box .password-wrapper input {
+            width: 100%;
+            padding: 0.8rem;
+            padding-right: 3rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+        .modal-box .password-wrapper input:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .modal-box .password-wrapper .toggle-pwd {
+            position: absolute;
+            right: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #7a8fa3;
+        }
+        .modal-box .btn-modal {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 0.3rem;
+        }
+        .modal-box .btn-modal:hover {
+            background: #0f1e2f;
+        }
+        .modal-box .btn-modal.cancel {
+            background: #e0e4ea;
+            color: #1a2a3a;
+        }
+        .modal-box .btn-modal.cancel:hover {
+            background: #d0d7e2;
+        }
+        .modal-box .error-msg {
+            color: #c0392b;
+            font-size: 0.85rem;
+            margin-top: -0.5rem;
+            margin-bottom: 0.8rem;
+            display: none;
+        }
 
-        /* Panel de administración */
+        /* === PANEL DE ADMINISTRACIÓN === */
         .admin-panel {
             display: none;
             background: #f8f6f2;
@@ -90,7 +169,9 @@
             margin-bottom: 2rem;
             border: 1px solid rgba(201, 168, 76, 0.3);
         }
-        .admin-panel.visible { display: block; }
+        .admin-panel.visible {
+            display: block;
+        }
         .admin-panel h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
@@ -102,7 +183,12 @@
             justify-content: space-between;
             align-items: center;
         }
-        .admin-panel h3 span { font-size: 0.8rem; font-weight: 400; color: #7a8fa3; font-family: 'Inter', sans-serif; }
+        .admin-panel h3 span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #7a8fa3;
+            font-family: 'Inter', sans-serif;
+        }
 
         .solicitudes-pendientes {
             max-height: 400px;
@@ -134,12 +220,21 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .btn-aprobar { background: #4caf50; color: white; }
-        .btn-aprobar:hover { background: #388e3c; }
-        .btn-rechazar { background: #e53935; color: white; }
-        .btn-rechazar:hover { background: #c62828; }
+        .btn-aprobar {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-aprobar:hover {
+            background: #388e3c;
+        }
+        .btn-rechazar {
+            background: #e53935;
+            color: white;
+        }
+        .btn-rechazar:hover {
+            background: #c62828;
+        }
 
-        /* Gestión de horarios en admin */
         .horarios-container {
             margin-top: 1rem;
             border-top: 1px solid #d0d7e2;
@@ -156,14 +251,19 @@
             border-radius: 10px;
             border: 1px solid #e2e8f0;
         }
-        .horario-item select, .horario-item input {
+        .horario-item select,
+        .horario-item input {
             padding: 0.4rem 0.6rem;
             border: 2px solid #d0d7e2;
             border-radius: 8px;
             font-size: 0.9rem;
         }
-        .horario-item select { min-width: 100px; }
-        .horario-item input[type="time"] { width: 100px; }
+        .horario-item select {
+            min-width: 100px;
+        }
+        .horario-item input[type="time"] {
+            width: 100px;
+        }
         .horario-item .btn-eliminar {
             background: #fee;
             border: 1px solid #fcc;
@@ -185,7 +285,9 @@
             transition: all 0.2s;
             margin-top: 0.5rem;
         }
-        .btn-agregar-horario:hover { background: #dce6f0; }
+        .btn-agregar-horario:hover {
+            background: #dce6f0;
+        }
 
         .password-group {
             margin-top: 1rem;
@@ -212,16 +314,22 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .password-group button:hover { background: #0f1e2f; }
-        #passwordMsg { font-size:0.85rem; color:#27ae60; display:none; }
+        .password-group button:hover {
+            background: #0f1e2f;
+        }
+        #passwordMsg {
+            font-size: 0.85rem;
+            color: #27ae60;
+            display: none;
+        }
 
-        /* Formulario de solicitud */
+        /* === FORMULARIO DE SOLICITUD === */
         .solicitud-form {
             background: #faf8f5;
             border-radius: 16px;
             padding: 1.5rem;
             margin: 1.5rem 0;
-            border: 1px solid rgba(201,168,76,0.2);
+            border: 1px solid rgba(201, 168, 76, 0.2);
         }
         .solicitud-form h3 {
             font-family: 'Playfair Display', serif;
@@ -243,14 +351,16 @@
             color: #3d506b;
             margin-bottom: 0.2rem;
         }
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 0.6rem 0.8rem;
             border: 2px solid #d0d7e2;
             border-radius: 10px;
             font-size: 0.95rem;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #c9a84c;
         }
@@ -264,53 +374,23 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .btn-solicitar:hover { background: #0f1e2f; }
-
-        /* Lista de solicitudes del usuario */
-        .mis-solicitudes {
-            margin-top: 2rem;
-            border-top: 1px solid #d0d7e2;
-            padding-top: 1.5rem;
+        .btn-solicitar:hover {
+            background: #0f1e2f;
         }
-        .mis-solicitudes h3 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 1rem;
-        }
-        .solicitud-usuario {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .solicitud-usuario .info {
-            flex: 1;
-        }
-        .solicitud-usuario .info p {
-            margin: 0.2rem 0;
-            font-size: 0.9rem;
-        }
-        .estado-pendiente { color: #f39c12; font-weight: 600; }
-        .estado-aprobada { color: #27ae60; font-weight: 600; }
-        .estado-rechazada { color: #e74c3c; font-weight: 600; }
-        .btn-descargar-pdf {
-            background: #1a2a3a;
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
+        #mensajeSolicitud {
+            margin-top: 0.8rem;
             font-weight: 600;
         }
-        .btn-descargar-pdf:hover { background: #0f1e2f; }
 
-        /* Calculadora y resultados (igual que antes) */
-        .row { display: flex; gap: 2rem; flex-wrap: wrap; }
-        .col { flex: 1 1 300px; }
+        /* === CALCULADORA Y RESULTADOS === */
+        .row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1 1 300px;
+        }
 
         .input-section {
             background: linear-gradient(135deg, #faf8f5, #f5f3f0);
@@ -330,8 +410,16 @@
             background: linear-gradient(180deg, #c9a84c, #1a2a3a);
             border-radius: 16px 0 0 16px;
         }
-        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .input-group label { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.1rem; }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .input-group label {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
         .input-wrapper {
             display: flex;
             align-items: center;
@@ -350,12 +438,22 @@
             width: 120px;
             min-width: 80px;
         }
-        .input-wrapper input:focus { outline: none; border-color: #c9a84c; box-shadow: 0 0 0 6px rgba(201,168,76,0.15); }
-        .input-wrapper input[type="number"] { -moz-appearance: textfield; }
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #c9a84c;
+            box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.15);
+        }
+        .input-wrapper input[type="number"] {
+            -moz-appearance: textfield;
+        }
         .input-wrapper input[type="number"]::-webkit-outer-spin-button,
-        .input-wrapper input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .input-wrapper input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         .stepper-btn {
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: white;
             border: 2px solid #d0d7e2;
@@ -369,7 +467,10 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        .stepper-btn:hover { border-color: #c9a84c; background: rgba(201,168,76,0.08); }
+        .stepper-btn:hover {
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.08);
+        }
 
         .results-grid {
             display: grid;
@@ -384,13 +485,34 @@
             padding: 1.2rem;
         }
         .result-card.highlight {
-            background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04));
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.04));
             border-color: #c9a84c;
         }
-        .result-label { font-size: 0.75rem; text-transform: uppercase; color: #7a8fa3; font-weight: 700; letter-spacing: 0.5px; }
-        .result-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1a2a3a; }
-        .result-value small { font-size: 0.8rem; font-weight: 600; color: #7a8fa3; }
-        .result-sub { font-size: 0.85rem; color: #5a6f8f; border-top: 1px solid rgba(201,168,76,0.2); padding-top: 0.5rem; margin-top: 0.5rem; }
+        .result-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #7a8fa3;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .result-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a2a3a;
+        }
+        .result-value small {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #7a8fa3;
+        }
+        .result-sub {
+            font-size: 0.85rem;
+            color: #5a6f8f;
+            border-top: 1px solid rgba(201, 168, 76, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
 
         .info-box {
             background: #f4f8fe;
@@ -399,28 +521,17 @@
             border-radius: 0 12px 12px 0;
             margin: 1rem 0;
         }
-        .info-box .title { font-weight: 700; }
-        .info-box .warning { font-size: 0.8rem; color: #7a8fa3; margin-top: 0.4rem; font-style: italic; }
-
-        .horario-selector {
-            background: #faf8f5;
-            border-radius: 12px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border: 1px solid rgba(201, 168, 76, 0.2);
+        .info-box .title {
+            font-weight: 700;
         }
-        .horario-selector label { font-weight: 600; display: block; margin-bottom: 0.3rem; }
-        .horario-selector select {
-            width: 100%;
-            padding: 0.7rem;
-            border: 2px solid #d0d7e2;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: white;
+        .info-box .warning {
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            margin-top: 0.4rem;
+            font-style: italic;
         }
-        .horario-selector select:focus { outline: none; border-color: #c9a84c; }
-        .horario-selector .no-horarios { color: #a00; font-size: 0.9rem; padding: 0.5rem 0; }
 
+        /* === TABLA DE HORARIOS === */
         .horarios-disponibles {
             margin: 1.5rem 0;
             background: #fafafa;
@@ -449,8 +560,12 @@
             padding: 0.4rem 0.6rem;
             border-bottom: 1px solid #e2e8f0;
         }
-        .horarios-disponibles .disponible { background: #e8f5e9; }
-        .horarios-disponibles .ocupado { background: #ffebee; }
+        .horarios-disponibles .disponible {
+            background: #e8f5e9;
+        }
+        .horarios-disponibles .ocupado {
+            background: #ffebee;
+        }
         .badge-estado {
             display: inline-block;
             padding: 0.2rem 0.6rem;
@@ -458,25 +573,79 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-        .badge-disponible { background: #4caf50; color: white; }
-        .badge-ocupado { background: #e53935; color: white; }
-
-        .footer-text {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #7a8fa3;
-            margin-top: 1rem;
-            border-top: 1px solid rgba(201, 168, 76, 0.15);
-            padding-top: 1rem;
+        .badge-disponible {
+            background: #4caf50;
+            color: white;
         }
-        .footer-text .contacto { margin-top: 0.3rem; font-size: 0.85rem; color: #5a6f8f; }
+        .badge-ocupado {
+            background: #e53935;
+            color: white;
+        }
 
+        /* === MIS SOLICITUDES === */
+        .mis-solicitudes {
+            margin-top: 2rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1.5rem;
+        }
+        .mis-solicitudes h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+        .solicitud-usuario {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .solicitud-usuario .info {
+            flex: 1;
+        }
+        .solicitud-usuario .info p {
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+        .estado-pendiente {
+            color: #f39c12;
+            font-weight: 600;
+        }
+        .estado-aprobada {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .estado-rechazada {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        .btn-descargar-pdf {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-descargar-pdf:hover {
+            background: #0f1e2f;
+        }
+
+        /* === VISTA PREVIA === */
         .preview-section {
             margin-top: 2rem;
             border-top: 2px dashed #d0d7e2;
             padding-top: 1.5rem;
         }
-        .preview-section h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem; }
+        .preview-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
         .preview-container {
             background: white;
             border: 1px solid #d0d7e2;
@@ -495,13 +664,42 @@
             padding: 20px;
         }
 
+        .footer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            margin-top: 1rem;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+            padding-top: 1rem;
+        }
+        .footer-text .contacto {
+            margin-top: 0.3rem;
+            font-size: 0.85rem;
+            color: #5a6f8f;
+        }
+
         @media (max-width: 768px) {
-            .container { padding: 1.5rem; }
-            .results-grid { grid-template-columns: 1fr; }
-            .row { flex-direction: column; }
-            .admin-toggle { top: 0.8rem; right: 1rem; }
-            .solicitud-item, .solicitud-usuario { flex-direction: column; align-items: stretch; }
-            .solicitud-item .acciones { margin-top: 0.5rem; }
+            .container {
+                padding: 1.5rem;
+            }
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            .row {
+                flex-direction: column;
+            }
+            .admin-toggle {
+                top: 0.8rem;
+                right: 1rem;
+            }
+            .solicitud-item,
+            .solicitud-usuario {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .solicitud-item .acciones {
+                margin-top: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -522,17 +720,15 @@
             </div>
         </div>
 
-        <!-- Panel de administración -->
+        <!-- Panel de Administración (oculto) -->
         <div class="admin-panel" id="adminPanel">
             <h3>🔧 Panel de Administración <span>Gestiona horarios y solicitudes</span></h3>
 
-            <!-- Solicitudes pendientes -->
             <h4 style="margin-top: 0.5rem;">📋 Solicitudes pendientes</h4>
             <div class="solicitudes-pendientes" id="solicitudesPendientes">
                 <p style="color: #7a8fa3;">No hay solicitudes pendientes.</p>
             </div>
 
-            <!-- Gestión de horarios -->
             <div class="horarios-container">
                 <h4>📅 Gestión de horarios (Disponible / Ocupado)</h4>
                 <div id="horariosListAdmin"></div>
@@ -542,7 +738,6 @@
                 </p>
             </div>
 
-            <!-- Cambiar contraseña -->
             <div class="password-group">
                 <input type="password" id="nuevaPassword" placeholder="Nueva contraseña (dejar en blanco para no cambiar)" />
                 <button id="cambiarPasswordBtn">Cambiar contraseña</button>
@@ -550,12 +745,15 @@
             </div>
         </div>
 
-        <!-- Modal de autenticación -->
+        <!-- Modal de Autenticación -->
         <div class="modal-overlay" id="authModal">
             <div class="modal-box">
                 <h3>🔒 Acceso restringido</h3>
                 <p>Ingresa la contraseña de administrador para gestionar.</p>
-                <input type="password" id="authPassword" placeholder="Contraseña" />
+                <div class="password-wrapper">
+                    <input type="password" id="authPassword" placeholder="Contraseña" />
+                    <button class="toggle-pwd" id="togglePwd" type="button">👁️</button>
+                </div>
                 <div class="error-msg" id="authError">Contraseña incorrecta. Intenta de nuevo.</div>
                 <div>
                     <button class="btn-modal cancel" id="authCancel">Cancelar</button>
@@ -564,10 +762,11 @@
             </div>
         </div>
 
-        <!-- Contenido principal -->
+        <!-- Contenido Principal -->
         <div class="row">
             <div class="col">
-                <!-- Formulario de solicitud -->
+
+                <!-- Formulario de Solicitud -->
                 <div class="solicitud-form">
                     <h3>📝 Solicitar clase</h3>
                     <div class="form-row">
@@ -592,10 +791,10 @@
                         </div>
                     </div>
                     <button class="btn-solicitar" id="btnSolicitar">📩 Enviar solicitud</button>
-                    <div id="mensajeSolicitud" style="margin-top:0.8rem; font-weight:600;"></div>
+                    <div id="mensajeSolicitud"></div>
                 </div>
 
-                <!-- Calculadora (previsualización de costos) -->
+                <!-- Calculadora de precios -->
                 <div class="input-section">
                     <div class="input-group">
                         <label>Previsualización de costos</label>
@@ -627,17 +826,18 @@
                     <div class="warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
                 </div>
 
-                <!-- Tabla de horarios completa -->
+                <!-- Tabla de Horarios -->
                 <div class="horarios-disponibles">
                     <h4>📋 Horario del profesor (Disponible / Ocupado)</h4>
                     <div id="horariosTablaContainer">
                         <p style="color:#7a8fa3; font-size:0.9rem;">Cargando horarios...</p>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- Mis solicitudes -->
+        <!-- Mis Solicitudes -->
         <div class="mis-solicitudes">
             <h3>📋 Mis solicitudes</h3>
             <div id="misSolicitudesContainer">
@@ -645,7 +845,7 @@
             </div>
         </div>
 
-        <!-- Vista previa del PDF -->
+        <!-- Vista Previa del PDF -->
         <div class="preview-section">
             <h3>👁️ Vista previa del PDF (solicitud aprobada)</h3>
             <div class="preview-container">
@@ -663,11 +863,16 @@
         (function() {
             'use strict';
 
-            // ---- Constantes ----
+            // ---- CONSTANTES ----
             const PASSWORD_KEY = 'morphyy_admin_password';
             const DEFAULT_PASSWORD = 'ClubMorphy369';
 
-            // ---- Elementos DOM ----
+            // ---- ESTADO GLOBAL ----
+            let horarios = [];
+            let solicitudes = [];
+            let isAdminMode = false;
+
+            // ---- ELEMENTOS DOM ----
             const adminToggle = document.getElementById('adminToggle');
             const adminPanel = document.getElementById('adminPanel');
             const authModal = document.getElementById('authModal');
@@ -675,6 +880,7 @@
             const authConfirm = document.getElementById('authConfirm');
             const authCancel = document.getElementById('authCancel');
             const authError = document.getElementById('authError');
+            const togglePwd = document.getElementById('togglePwd');
 
             const solicitudesPendientes = document.getElementById('solicitudesPendientes');
             const horariosListAdmin = document.getElementById('horariosListAdmin');
@@ -694,7 +900,6 @@
             const misSolicitudesContainer = document.getElementById('misSolicitudesContainer');
             const previewContainer = document.getElementById('pdf-preview');
 
-            // Calculadora
             const inputAlumnos = document.getElementById('alumnosInput');
             const totalDisplay = document.getElementById('totalDisplay');
             const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
@@ -704,14 +909,14 @@
             const decrementBtn = document.getElementById('decrementBtn');
             const incrementBtn = document.getElementById('incrementBtn');
 
-            // ---- Estado ----
-            let horarios = [];
-            let solicitudes = [];
-            let isAdminMode = false;
-
-            // ---- Gestión de contraseña ----
+            // ---- GESTIÓN DE CONTRASEÑA ----
             function getStoredPassword() {
-                return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+                let pwd = localStorage.getItem(PASSWORD_KEY);
+                if (!pwd) {
+                    localStorage.setItem(PASSWORD_KEY, DEFAULT_PASSWORD);
+                    pwd = DEFAULT_PASSWORD;
+                }
+                return pwd;
             }
 
             function setStoredPassword(pwd) {
@@ -719,17 +924,82 @@
             }
 
             function checkPassword(pwd) {
-                return pwd === getStoredPassword();
+                const stored = getStoredPassword();
+                const result = pwd.trim() === stored;
+                console.log('Comparando:', pwd.trim(), 'vs', stored, '=>', result);
+                return result;
             }
 
-            // ---- Cargar datos desde localStorage ----
+            // ---- TOGGLE MOSTRAR CONTRASEÑA ----
+            togglePwd.addEventListener('click', function() {
+                const type = authPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                authPassword.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+
+            // ---- AUTENTICACIÓN ----
+            function mostrarModal() {
+                authPassword.value = '';
+                authError.style.display = 'none';
+                authModal.classList.add('active');
+                authPassword.focus();
+            }
+
+            function ocultarModal() {
+                authModal.classList.remove('active');
+            }
+
+            adminToggle.addEventListener('click', function() {
+                if (isAdminMode) {
+                    isAdminMode = false;
+                    adminPanel.classList.remove('visible');
+                    this.classList.remove('active');
+                    this.textContent = '⚙️ Admin';
+                    actualizarTodo();
+                    return;
+                }
+                mostrarModal();
+            });
+
+            authConfirm.addEventListener('click', function() {
+                const pwd = authPassword.value;
+                if (checkPassword(pwd)) {
+                    isAdminMode = true;
+                    adminPanel.classList.add('visible');
+                    adminToggle.classList.add('active');
+                    adminToggle.textContent = '🔒 Ocultar Admin';
+                    ocultarModal();
+                    actualizarTodo();
+                } else {
+                    authError.style.display = 'block';
+                    authPassword.value = '';
+                    authPassword.focus();
+                }
+            });
+
+            authCancel.addEventListener('click', ocultarModal);
+            authPassword.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') authConfirm.click();
+            });
+
+            // ---- CAMBIAR CONTRASEÑA ----
+            cambiarPasswordBtn.addEventListener('click', function() {
+                const newPwd = nuevaPassword.value.trim();
+                if (newPwd === '') { alert('Ingresa una nueva contraseña.'); return; }
+                setStoredPassword(newPwd);
+                passwordMsg.style.display = 'inline';
+                setTimeout(() => { passwordMsg.style.display = 'none'; }, 3000);
+                nuevaPassword.value = '';
+                alert('Contraseña actualizada correctamente.');
+            });
+
+            // ---- CARGA DE DATOS ----
             function loadData() {
                 const savedHorarios = localStorage.getItem('morphyy_horarios_avanzado');
                 if (savedHorarios) {
-                    try { horarios = JSON.parse(savedHorarios); } catch(e) { horarios = []; }
+                    try { horarios = JSON.parse(savedHorarios); } catch (e) { horarios = []; }
                 }
                 if (horarios.length === 0) {
-                    // Datos de ejemplo (Lunes y Miércoles ocupados por ITSOEH)
                     horarios = [
                         { dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH' },
                         { dia: 'Lunes', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH' },
@@ -772,16 +1042,15 @@
 
                 const savedSolicitudes = localStorage.getItem('morphyy_solicitudes');
                 if (savedSolicitudes) {
-                    try { solicitudes = JSON.parse(savedSolicitudes); } catch(e) { solicitudes = []; }
+                    try { solicitudes = JSON.parse(savedSolicitudes); } catch (e) { solicitudes = []; }
                 }
             }
 
-            // ---- Guardar solicitudes ----
             function saveSolicitudes() {
                 localStorage.setItem('morphyy_solicitudes', JSON.stringify(solicitudes));
             }
 
-            // ---- Funciones de cálculo ----
+            // ---- FUNCIONES DE CÁLCULO ----
             function calcular(n) {
                 n = Math.min(30, Math.max(1, n));
                 let total, porAlumno, rango, detalle, tarifaDesc;
@@ -807,7 +1076,7 @@
                 return { total, porAlumno, rango, detalle, tarifaDesc };
             }
 
-            // ---- Generar contenido del PDF (recibe datos de la solicitud) ----
+            // ---- GENERAR CONTENIDO DEL PDF ----
             function generarContenidoPDF(escuela, dirigido, horario, alumnos) {
                 const res = calcular(alumnos);
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
@@ -819,59 +1088,52 @@
                 const contacto = 'German Hernández Cornejo · clubmorphy369@gmail.com · 7731856476';
 
                 return `
-                <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
-                    <div style="display: flex; align-items: center; gap: 1.2rem; border-bottom: 3px double #1a2b3c; padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
-                        <span style="font-size: 3.5rem;">♟️</span>
-                        <div>
-                            <h1 style="font-size: 2.2rem; margin: 0; letter-spacing: 1px; color: #0f1e2f;">CLUB MORPHYY</h1>
-                            <p style="margin: 0; color: #3d506b; font-size: 1.1rem;">Clases de Ajedrez · Tarifas 2026</p>
+                    <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
+                        <div style="display: flex; align-items: center; gap: 1.2rem; border-bottom: 3px double #1a2b3c; padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
+                            <span style="font-size: 3.5rem;">♟️</span>
+                            <div>
+                                <h1 style="font-size: 2.2rem; margin: 0; letter-spacing: 1px; color: #0f1e2f;">CLUB MORPHYY</h1>
+                                <p style="margin: 0; color: #3d506b; font-size: 1.1rem;">Clases de Ajedrez · Tarifas 2026</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
+                            <strong>Fecha de cotización:</strong> ${fechaStr}
+                        </div>
+                        <div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">
+                            <p><strong>Escuela:</strong> ${escuela}</p>
+                            <p><strong>Dirigido a:</strong> ${dirigido}</p>
+                        </div>
+                        <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
+                        <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
+                        <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
+                        <p><strong>Número de alumnos considerados:</strong> ${alumnos}</p>
+                        <table style="width:100%; border-collapse:collapse; margin:1rem 0;">
+                            <thead><tr style="background:#eef3fa;"><th style="padding:0.5rem; border:1px solid #ccc;">Rango</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo total</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo por alumno</th></tr></thead>
+                            <tbody>
+                                <tr><td style="padding:0.5rem; border:1px solid #ccc;">Menos de 15</td><td style="padding:0.5rem; border:1px solid #ccc;">$350.00 MXN (fijo)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos < 15 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
+                                <tr><td style="padding:0.5rem; border:1px solid #ccc;">15 a 20</td><td style="padding:0.5rem; border:1px solid #ccc;">$375.00 a $500.00 MXN</td><td style="padding:0.5rem; border:1px solid #ccc;">${(alumnos >= 15 && alumnos <= 20) ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
+                                <tr style="background:#f8faff; font-weight:600;"><td style="padding:0.5rem; border:1px solid #ccc;">21 a 30</td><td style="padding:0.5rem; border:1px solid #ccc;">$500.00 MXN (cerrado)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos >= 21 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
+                            </tbody>
+                        </table>
+                        <div style="background: #f4f8fe; padding: 1rem 1.2rem; border-left: 5px solid #1a2b3c; margin: 1.2rem 0;">
+                            <strong>✓ Tarifa aplicada:</strong> ${res.tarifaDesc}
+                            <br><span>Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
+                        </div>
+                        <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem;">3. Condiciones generales</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Grupos separados:</strong> Cada grupo paga su propia tarifa.</li>
+                            <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Política de pago:</strong> El costo se define al inicio del periodo.</li>
+                            <li style="padding: 0.4rem 0;"><strong>Bajas definitivas:</strong> El precio se ajusta si el grupo baja de tramo.</li>
+                        </ul>
+                        <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b;">
+                            <p><strong>Contacto:</strong> ${contacto}</p>
+                            <p style="font-size: 0.8rem; color: #6a7b96;">Vigencia: 15 días naturales.</p>
                         </div>
                     </div>
-
-                    <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
-                        <strong>Fecha de cotización:</strong> ${fechaStr}
-                    </div>
-
-                    <div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">
-                        <p><strong>Escuela:</strong> ${escuela}</p>
-                        <p><strong>Dirigido a:</strong> ${dirigido}</p>
-                    </div>
-
-                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
-                    <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
-
-                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
-                    <p><strong>Número de alumnos considerados:</strong> ${alumnos}</p>
-                    <table style="width:100%; border-collapse:collapse; margin:1rem 0;">
-                        <thead><tr style="background:#eef3fa;"><th style="padding:0.5rem; border:1px solid #ccc;">Rango</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo total</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo por alumno</th></tr></thead>
-                        <tbody>
-                            <tr><td style="padding:0.5rem; border:1px solid #ccc;">Menos de 15</td><td style="padding:0.5rem; border:1px solid #ccc;">$350.00 MXN (fijo)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos < 15 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
-                            <tr><td style="padding:0.5rem; border:1px solid #ccc;">15 a 20</td><td style="padding:0.5rem; border:1px solid #ccc;">$375.00 a $500.00 MXN</td><td style="padding:0.5rem; border:1px solid #ccc;">${(alumnos >= 15 && alumnos <= 20) ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
-                            <tr style="background:#f8faff; font-weight:600;"><td style="padding:0.5rem; border:1px solid #ccc;">21 a 30</td><td style="padding:0.5rem; border:1px solid #ccc;">$500.00 MXN (cerrado)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos >= 21 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div style="background: #f4f8fe; padding: 1rem 1.2rem; border-left: 5px solid #1a2b3c; margin: 1.2rem 0;">
-                        <strong>✓ Tarifa aplicada:</strong> ${res.tarifaDesc}
-                        <br><span>Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
-                    </div>
-
-                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem;">3. Condiciones generales</h2>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Grupos separados:</strong> Cada grupo paga su propia tarifa.</li>
-                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Política de pago:</strong> El costo se define al inicio del periodo.</li>
-                        <li style="padding: 0.4rem 0;"><strong>Bajas definitivas:</strong> El precio se ajusta si el grupo baja de tramo.</li>
-                    </ul>
-
-                    <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b;">
-                        <p><strong>Contacto:</strong> ${contacto}</p>
-                        <p style="font-size: 0.8rem; color: #6a7b96;">Vigencia: 15 días naturales.</p>
-                    </div>
-                </div>
                 `;
             }
 
-            // ---- Renderizar horarios en el panel de administración ----
+            // ---- RENDER HORARIOS ADMIN ----
             function renderHorariosAdmin() {
                 horariosListAdmin.innerHTML = '';
                 horarios.forEach((h, index) => {
@@ -926,7 +1188,7 @@
                 actualizarTodo();
             }
 
-            // ---- Renderizar tabla de horarios para usuarios ----
+            // ---- RENDER TABLA HORARIOS (USUARIO) ----
             function renderHorariosTabla() {
                 if (horarios.length === 0) {
                     horariosTablaContainer.innerHTML = `<p style="color:#7a8fa3;">No hay horarios registrados.</p>`;
@@ -952,7 +1214,7 @@
                 horariosTablaContainer.innerHTML = html;
             }
 
-            // ---- Poblar selector de horarios disponibles en el formulario ----
+            // ---- POBLAR SELECTOR DE HORARIOS DISPONIBLES ----
             function populateHorarioSelect() {
                 solicitudHorario.innerHTML = '';
                 const disponibles = horarios.filter(h => h.estado === 'disponible');
@@ -965,7 +1227,7 @@
                     return;
                 }
                 document.getElementById('noHorariosDisponibles').style.display = 'none';
-                disponibles.forEach((h, idx) => {
+                disponibles.forEach(h => {
                     const realIndex = horarios.indexOf(h);
                     const opt = document.createElement('option');
                     opt.value = realIndex;
@@ -974,7 +1236,7 @@
                 });
             }
 
-            // ---- Mostrar solicitudes pendientes en el panel de admin ----
+            // ---- SOLICITUDES PENDIENTES (ADMIN) ----
             function renderSolicitudesPendientes() {
                 const pendientes = solicitudes.filter(s => s.estado === 'pendiente');
                 if (pendientes.length === 0) {
@@ -1000,7 +1262,6 @@
                 });
                 solicitudesPendientes.innerHTML = html;
 
-                // Eventos de aprobar/rechazar
                 document.querySelectorAll('.btn-aprobar').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -1015,37 +1276,32 @@
                 });
             }
 
-            // ---- Aprobar solicitud ----
+            // ---- APROBAR / RECHAZAR ----
             function aprobarSolicitud(idx) {
                 const solicitud = solicitudes[idx];
                 if (!solicitud || solicitud.estado !== 'pendiente') return;
-
-                // Marcar horario como ocupado
                 const horarioIdx = solicitud.horarioIndex;
                 if (horarioIdx !== undefined && horarios[horarioIdx]) {
                     horarios[horarioIdx].estado = 'ocupado';
                     horarios[horarioIdx].escuela = solicitud.escuela;
                     localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 }
-
                 solicitud.estado = 'aprobada';
                 saveSolicitudes();
                 actualizarTodo();
                 alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado.');
             }
 
-            // ---- Rechazar solicitud ----
             function rechazarSolicitud(idx) {
                 const solicitud = solicitudes[idx];
                 if (!solicitud || solicitud.estado !== 'pendiente') return;
-
                 solicitud.estado = 'rechazada';
                 saveSolicitudes();
                 actualizarTodo();
                 alert('❌ Solicitud rechazada.');
             }
 
-            // ---- Mostrar mis solicitudes (usuario) ----
+            // ---- MIS SOLICITUDES (USUARIO) ----
             function renderMisSolicitudes() {
                 if (solicitudes.length === 0) {
                     misSolicitudesContainer.innerHTML = `<p style="color:#7a8fa3;">No has enviado ninguna solicitud.</p>`;
@@ -1079,7 +1335,6 @@
                 });
                 misSolicitudesContainer.innerHTML = html;
 
-                // Eventos de descarga de PDF
                 document.querySelectorAll('.btn-descargar-pdf').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -1091,19 +1346,12 @@
                 });
             }
 
-            // ---- Generar PDF desde una solicitud aprobada ----
+            // ---- GENERAR PDF DESDE SOLICITUD ----
             function generarPDFDesdeSolicitud(solicitud) {
                 const horario = horarios[solicitud.horarioIndex];
                 if (!horario) return;
+                const contenido = generarContenidoPDF(solicitud.escuela, solicitud.dirigido, horario, solicitud.alumnos);
 
-                const contenido = generarContenidoPDF(
-                    solicitud.escuela,
-                    solicitud.dirigido,
-                    horario,
-                    solicitud.alumnos
-                );
-
-                // Crear elemento temporal y generar PDF
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = contenido;
                 tempDiv.style.position = 'fixed';
@@ -1122,7 +1370,6 @@
                 setTimeout(() => {
                     const pdfContent = tempDiv.querySelector('div');
                     if (!pdfContent) { alert('Error al generar el PDF.'); document.body.removeChild(tempDiv); return; }
-
                     html2canvas(pdfContent, {
                         scale: 2,
                         useCORS: true,
@@ -1139,7 +1386,6 @@
                         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                         pdf.save('Cotizacion_Club_Morphyy.pdf');
-
                         document.body.removeChild(tempDiv);
                     }).catch((err) => {
                         console.error(err);
@@ -1149,9 +1395,9 @@
                 }, 400);
             }
 
-            // ---- Actualizar todo (UI completa) ----
+            // ---- ACTUALIZAR TODO ----
             function actualizarTodo() {
-                // Actualizar calculadora
+                // Calculadora
                 let n = parseInt(inputAlumnos.value, 10);
                 if (isNaN(n) || n < 1) n = 1;
                 if (n > 30) n = 30;
@@ -1163,7 +1409,6 @@
                 detalleDisplay.textContent = res.detalle;
                 tarifaDescDisplay.textContent = res.tarifaDesc;
 
-                // Renderizar tablas y selectores
                 renderHorariosTabla();
                 populateHorarioSelect();
 
@@ -1174,33 +1419,35 @@
 
                 renderMisSolicitudes();
 
-                // Actualizar preview (con la primera solicitud aprobada o con datos por defecto)
-                const aprobada = solicitudes.find(s => s.estado === 'aprobada');
+                // Preview (última aprobada o por defecto)
+                const aprobada = [...solicitudes].reverse().find(s => s.estado === 'aprobada');
                 if (aprobada) {
                     const horario = horarios[aprobada.horarioIndex];
                     if (horario) {
-                        const previewHTML = generarContenidoPDF(aprobada.escuela, aprobada.dirigido, horario, aprobada.alumnos);
-                        previewContainer.innerHTML = previewHTML;
+                        previewContainer.innerHTML = generarContenidoPDF(aprobada.escuela, aprobada.dirigido, horario,
+                            aprobada.alumnos);
                     }
                 } else {
-                    // Preview por defecto con 15 alumnos
-                    const defaultHorario = horarios.find(h => h.estado === 'disponible') || horarios[0] || { dia: 'Lunes', inicio: '09:00', fin: '10:00' };
-                    const previewHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15);
-                    previewContainer.innerHTML = previewHTML;
+                    const defaultHorario = horarios.find(h => h.estado === 'disponible') || horarios[0] || { dia: 'Lunes',
+                        inicio: '09:00', fin: '10:00' };
+                    previewContainer.innerHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15);
                 }
             }
 
-            // ---- Enviar solicitud ----
+            // ---- ENVIAR SOLICITUD ----
             btnSolicitar.addEventListener('click', function() {
                 const escuela = solicitudEscuela.value.trim();
                 const dirigido = solicitudDirigido.value.trim();
                 const horarioIdx = parseInt(solicitudHorario.value, 10);
                 const alumnos = parseInt(solicitudAlumnos.value, 10);
 
-                if (!escuela) { mensajeSolicitud.textContent = '⚠️ Por favor, escribe el nombre de la escuela.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
-                if (!dirigido) { mensajeSolicitud.textContent = '⚠️ Por favor, escribe a quién va dirigido.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
-                if (isNaN(horarioIdx) || horarioIdx < 0 || horarioIdx >= horarios.length || horarios[horarioIdx].estado !== 'disponible') {
-                    mensajeSolicitud.textContent = '⚠️ Por favor, selecciona un horario disponible válido.';
+                if (!escuela) { mensajeSolicitud.textContent = '⚠️ Escribe el nombre de la escuela.';
+                    mensajeSolicitud.style.color = '#e74c3c'; return; }
+                if (!dirigido) { mensajeSolicitud.textContent = '⚠️ Escribe a quién va dirigido.';
+                    mensajeSolicitud.style.color = '#e74c3c'; return; }
+                if (isNaN(horarioIdx) || horarioIdx < 0 || horarioIdx >= horarios.length || horarios[horarioIdx].estado !==
+                    'disponible') {
+                    mensajeSolicitud.textContent = '⚠️ Selecciona un horario disponible válido.';
                     mensajeSolicitud.style.color = '#e74c3c';
                     return;
                 }
@@ -1210,7 +1457,7 @@
                     return;
                 }
 
-                const solicitud = {
+                solicitudes.push({
                     id: Date.now(),
                     escuela: escuela,
                     dirigido: dirigido,
@@ -1218,20 +1465,15 @@
                     alumnos: alumnos,
                     estado: 'pendiente',
                     fecha: new Date().toLocaleString('es-MX'),
-                };
-                solicitudes.push(solicitud);
+                });
                 saveSolicitudes();
 
-                mensajeSolicitud.textContent = '✅ Solicitud enviada correctamente. Espera la aprobación del administrador.';
+                mensajeSolicitud.textContent = '✅ Solicitud enviada. Espera aprobación.';
                 mensajeSolicitud.style.color = '#27ae60';
-
-                // Limpiar campos (opcional)
-                // solicitudEscuela.value = '';
-                // solicitudDirigido.value = '';
                 actualizarTodo();
             });
 
-            // ---- Eventos de la calculadora ----
+            // ---- EVENTOS CALCULADORA ----
             inputAlumnos.addEventListener('input', function() {
                 let val = parseInt(this.value, 10);
                 if (!isNaN(val) && val > 30) this.value = 30;
@@ -1257,59 +1499,15 @@
                 actualizarTodo();
             });
 
-            // ---- Agregar horario desde admin ----
+            // ---- AGREGAR HORARIO ADMIN ----
             agregarHorarioAdmin.addEventListener('click', function() {
                 horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' });
                 localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 actualizarTodo();
             });
 
-            // ---- Cambiar contraseña ----
-            cambiarPasswordBtn.addEventListener('click', function() {
-                const newPwd = nuevaPassword.value.trim();
-                if (newPwd === '') { alert('Ingresa una nueva contraseña.'); return; }
-                setStoredPassword(newPwd);
-                passwordMsg.style.display = 'inline';
-                setTimeout(() => { passwordMsg.style.display = 'none'; }, 3000);
-                nuevaPassword.value = '';
-                alert('Contraseña actualizada correctamente.');
-            });
-
-            // ---- Autenticación ----
-            function mostrarModal() { authPassword.value = ''; authError.style.display = 'none'; authModal.classList.add('active'); authPassword.focus(); }
-            function ocultarModal() { authModal.classList.remove('active'); }
-
-            adminToggle.addEventListener('click', function() {
-                if (isAdminMode) {
-                    isAdminMode = false;
-                    adminPanel.classList.remove('visible');
-                    this.classList.remove('active');
-                    this.textContent = '⚙️ Admin';
-                    actualizarTodo();
-                    return;
-                }
-                mostrarModal();
-            });
-
-            authConfirm.addEventListener('click', function() {
-                const pwd = authPassword.value;
-                if (checkPassword(pwd)) {
-                    isAdminMode = true;
-                    adminPanel.classList.add('visible');
-                    adminToggle.classList.add('active');
-                    adminToggle.textContent = '🔒 Ocultar Admin';
-                    ocultarModal();
-                    actualizarTodo();
-                } else {
-                    authError.style.display = 'block';
-                    authPassword.value = '';
-                    authPassword.focus();
-                }
-            });
-            authCancel.addEventListener('click', ocultarModal);
-            authPassword.addEventListener('keydown', function(e) { if (e.key === 'Enter') authConfirm.click(); });
-
-            // ---- Inicializar ----
+            // ---- INICIALIZACIÓN ----
+            getStoredPassword(); // Asegura que existe la contraseña
             loadData();
             actualizarTodo();
 
