@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Club Morphyy - Calculadora de Tarifas</title>
+    <title>Club Morphyy - Gestión de Horarios y Tarifas</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* ===== RESET Y ESTILOS BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
@@ -37,7 +32,6 @@
             position: relative;
         }
 
-        /* === BOTÓN ADMIN === */
         .admin-toggle {
             position: absolute;
             top: 1.2rem;
@@ -54,34 +48,20 @@
             opacity: 0.4;
             z-index: 10;
         }
-        .admin-toggle:hover {
-            opacity: 1;
-            border-color: #c9a84c;
-            color: #1a2a3a;
-        }
-        .admin-toggle.active {
-            opacity: 1;
-            border-color: #c9a84c;
-            background: rgba(201, 168, 76, 0.08);
-            color: #1a2a3a;
-        }
+        .admin-toggle:hover { opacity: 1; border-color: #c9a84c; color: #1a2a3a; }
+        .admin-toggle.active { opacity: 1; border-color: #c9a84c; background: rgba(201,168,76,0.08); color: #1a2a3a; }
 
-        /* === MODAL DE CONTRASEÑA === */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 9999;
             justify-content: center;
             align-items: center;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal-box {
             background: white;
             border-radius: 20px;
@@ -91,72 +71,27 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
         }
-        .modal-box h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #1a2a3a;
-        }
-        .modal-box p {
-            color: #5a6f8f;
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
-        }
-        .modal-box input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #d0d7e2;
-            border-radius: 12px;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-        .modal-box input:focus {
-            outline: none;
-            border-color: #c9a84c;
-        }
-        .modal-box .btn-modal {
-            background: #1a2a3a;
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin: 0 0.3rem;
-        }
-        .modal-box .btn-modal:hover {
-            background: #0f1e2f;
-        }
-        .modal-box .btn-modal.cancel {
-            background: #e0e4ea;
-            color: #1a2a3a;
-        }
-        .modal-box .btn-modal.cancel:hover {
-            background: #d0d7e2;
-        }
-        .modal-box .error-msg {
-            color: #c0392b;
-            font-size: 0.85rem;
-            margin-top: -0.5rem;
-            margin-bottom: 0.8rem;
-            display: none;
-        }
+        .modal-box h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.5rem; color: #1a2a3a; }
+        .modal-box p { color: #5a6f8f; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .modal-box input { width: 100%; padding: 0.8rem; border: 2px solid #d0d7e2; border-radius: 12px; font-size: 1rem; margin-bottom: 1rem; }
+        .modal-box input:focus { outline: none; border-color: #c9a84c; }
+        .modal-box .btn-modal { background: #1a2a3a; color: white; border: none; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin: 0 0.3rem; }
+        .modal-box .btn-modal:hover { background: #0f1e2f; }
+        .modal-box .btn-modal.cancel { background: #e0e4ea; color: #1a2a3a; }
+        .modal-box .btn-modal.cancel:hover { background: #d0d7e2; }
+        .modal-box .error-msg { color: #c0392b; font-size: 0.85rem; margin-top: -0.5rem; margin-bottom: 0.8rem; display: none; }
 
-        /* === PANEL DE EDICIÓN === */
-        .edit-panel {
+        /* Panel de administración */
+        .admin-panel {
             display: none;
             background: #f8f6f2;
             border-radius: 16px;
             padding: 1.5rem;
             margin-bottom: 2rem;
             border: 1px solid rgba(201, 168, 76, 0.3);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .edit-panel.visible {
-            display: block;
-        }
-        .edit-panel h3 {
+        .admin-panel.visible { display: block; }
+        .admin-panel h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
             margin-bottom: 1rem;
@@ -167,52 +102,48 @@
             justify-content: space-between;
             align-items: center;
         }
-        .edit-panel h3 span {
-            font-size: 0.8rem;
-            font-weight: 400;
-            color: #7a8fa3;
-            font-family: 'Inter', sans-serif;
+        .admin-panel h3 span { font-size: 0.8rem; font-weight: 400; color: #7a8fa3; font-family: 'Inter', sans-serif; }
+
+        .solicitudes-pendientes {
+            max-height: 400px;
+            overflow-y: auto;
         }
-        .edit-row {
+        .solicitud-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #e2e8f0;
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            justify-content: space-between;
+            align-items: center;
         }
-        .edit-group {
-            flex: 1 1 200px;
+        .solicitud-item .info {
+            flex: 1;
         }
-        .edit-group label {
-            display: block;
+        .solicitud-item .info p {
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+        .solicitud-item .acciones button {
+            margin-left: 0.5rem;
+            padding: 0.4rem 1rem;
+            border: none;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
-            color: #3d506b;
-            margin-bottom: 0.2rem;
+            cursor: pointer;
         }
-        .edit-group input {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            border: 2px solid #d0d7e2;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
-        }
-        .edit-group input:focus {
-            outline: none;
-            border-color: #c9a84c;
-        }
+        .btn-aprobar { background: #4caf50; color: white; }
+        .btn-aprobar:hover { background: #388e3c; }
+        .btn-rechazar { background: #e53935; color: white; }
+        .btn-rechazar:hover { background: #c62828; }
 
-        /* Gestión de horarios */
+        /* Gestión de horarios en admin */
         .horarios-container {
             margin-top: 1rem;
             border-top: 1px solid #d0d7e2;
             padding-top: 1rem;
-        }
-        .horarios-container h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1a2a3a;
         }
         .horario-item {
             display: flex;
@@ -220,20 +151,19 @@
             gap: 0.5rem;
             margin-bottom: 0.5rem;
             flex-wrap: wrap;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
         }
-        .horario-item select,
-        .horario-item input {
+        .horario-item select, .horario-item input {
             padding: 0.4rem 0.6rem;
             border: 2px solid #d0d7e2;
             border-radius: 8px;
             font-size: 0.9rem;
         }
-        .horario-item select {
-            min-width: 100px;
-        }
-        .horario-item input[type="time"] {
-            width: 100px;
-        }
+        .horario-item select { min-width: 100px; }
+        .horario-item input[type="time"] { width: 100px; }
         .horario-item .btn-eliminar {
             background: #fee;
             border: 1px solid #fcc;
@@ -242,9 +172,6 @@
             padding: 0.3rem 0.7rem;
             cursor: pointer;
             font-weight: 600;
-        }
-        .horario-item .btn-eliminar:hover {
-            background: #fdd;
         }
         .btn-agregar-horario {
             background: #eef3fa;
@@ -256,11 +183,10 @@
             font-size: 0.9rem;
             color: #1a2a3a;
             transition: all 0.2s;
+            margin-top: 0.5rem;
         }
-        .btn-agregar-horario:hover {
-            background: #dce6f0;
-        }
-        /* Contraseña en el panel */
+        .btn-agregar-horario:hover { background: #dce6f0; }
+
         .password-group {
             margin-top: 1rem;
             border-top: 1px solid #d0d7e2;
@@ -286,19 +212,105 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .password-group button:hover {
-            background: #0f1e2f;
-        }
+        .password-group button:hover { background: #0f1e2f; }
+        #passwordMsg { font-size:0.85rem; color:#27ae60; display:none; }
 
-        /* === RESTO DE ESTILOS (calculadora, resultados, etc.) === */
-        .row {
+        /* Formulario de solicitud */
+        .solicitud-form {
+            background: #faf8f5;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(201,168,76,0.2);
+        }
+        .solicitud-form h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+        .form-row {
             display: flex;
-            gap: 2rem;
             flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
-        .col {
-            flex: 1 1 300px;
+        .form-group {
+            flex: 1 1 200px;
         }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #3d506b;
+            margin-bottom: 0.2rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .btn-solicitar {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-solicitar:hover { background: #0f1e2f; }
+
+        /* Lista de solicitudes del usuario */
+        .mis-solicitudes {
+            margin-top: 2rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1.5rem;
+        }
+        .mis-solicitudes h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+        .solicitud-usuario {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .solicitud-usuario .info {
+            flex: 1;
+        }
+        .solicitud-usuario .info p {
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+        .estado-pendiente { color: #f39c12; font-weight: 600; }
+        .estado-aprobada { color: #27ae60; font-weight: 600; }
+        .estado-rechazada { color: #e74c3c; font-weight: 600; }
+        .btn-descargar-pdf {
+            background: #1a2a3a;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-descargar-pdf:hover { background: #0f1e2f; }
+
+        /* Calculadora y resultados (igual que antes) */
+        .row { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .col { flex: 1 1 300px; }
 
         .input-section {
             background: linear-gradient(135deg, #faf8f5, #f5f3f0);
@@ -318,16 +330,8 @@
             background: linear-gradient(180deg, #c9a84c, #1a2a3a);
             border-radius: 16px 0 0 16px;
         }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .input-group label {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.1rem; }
         .input-wrapper {
             display: flex;
             align-items: center;
@@ -346,22 +350,12 @@
             width: 120px;
             min-width: 80px;
         }
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: #c9a84c;
-            box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.15);
-        }
-        .input-wrapper input[type="number"] {
-            -moz-appearance: textfield;
-        }
+        .input-wrapper input:focus { outline: none; border-color: #c9a84c; box-shadow: 0 0 0 6px rgba(201,168,76,0.15); }
+        .input-wrapper input[type="number"] { -moz-appearance: textfield; }
         .input-wrapper input[type="number"]::-webkit-outer-spin-button,
-        .input-wrapper input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        .input-wrapper input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .stepper-btn {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 50%;
             background: white;
             border: 2px solid #d0d7e2;
@@ -375,10 +369,7 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        .stepper-btn:hover {
-            border-color: #c9a84c;
-            background: rgba(201, 168, 76, 0.08);
-        }
+        .stepper-btn:hover { border-color: #c9a84c; background: rgba(201,168,76,0.08); }
 
         .results-grid {
             display: grid;
@@ -393,34 +384,13 @@
             padding: 1.2rem;
         }
         .result-card.highlight {
-            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.04));
+            background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04));
             border-color: #c9a84c;
         }
-        .result-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #7a8fa3;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .result-value {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a2a3a;
-        }
-        .result-value small {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #7a8fa3;
-        }
-        .result-sub {
-            font-size: 0.85rem;
-            color: #5a6f8f;
-            border-top: 1px solid rgba(201, 168, 76, 0.2);
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-        }
+        .result-label { font-size: 0.75rem; text-transform: uppercase; color: #7a8fa3; font-weight: 700; letter-spacing: 0.5px; }
+        .result-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1a2a3a; }
+        .result-value small { font-size: 0.8rem; font-weight: 600; color: #7a8fa3; }
+        .result-sub { font-size: 0.85rem; color: #5a6f8f; border-top: 1px solid rgba(201,168,76,0.2); padding-top: 0.5rem; margin-top: 0.5rem; }
 
         .info-box {
             background: #f4f8fe;
@@ -429,17 +399,9 @@
             border-radius: 0 12px 12px 0;
             margin: 1rem 0;
         }
-        .info-box .title {
-            font-weight: 700;
-        }
-        .info-box .warning {
-            font-size: 0.8rem;
-            color: #7a8fa3;
-            margin-top: 0.4rem;
-            font-style: italic;
-        }
+        .info-box .title { font-weight: 700; }
+        .info-box .warning { font-size: 0.8rem; color: #7a8fa3; margin-top: 0.4rem; font-style: italic; }
 
-        /* Selector de horario para usuarios */
         .horario-selector {
             background: #faf8f5;
             border-radius: 12px;
@@ -447,11 +409,7 @@
             margin: 1rem 0;
             border: 1px solid rgba(201, 168, 76, 0.2);
         }
-        .horario-selector label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
+        .horario-selector label { font-weight: 600; display: block; margin-bottom: 0.3rem; }
         .horario-selector select {
             width: 100%;
             padding: 0.7rem;
@@ -460,17 +418,9 @@
             font-size: 1rem;
             background: white;
         }
-        .horario-selector select:focus {
-            outline: none;
-            border-color: #c9a84c;
-        }
-        .horario-selector .no-horarios {
-            color: #a00;
-            font-size: 0.9rem;
-            padding: 0.5rem 0;
-        }
+        .horario-selector select:focus { outline: none; border-color: #c9a84c; }
+        .horario-selector .no-horarios { color: #a00; font-size: 0.9rem; padding: 0.5rem 0; }
 
-        /* Tabla de horarios disponibles (visible para todos) */
         .horarios-disponibles {
             margin: 1.5rem 0;
             background: #fafafa;
@@ -499,57 +449,34 @@
             padding: 0.4rem 0.6rem;
             border-bottom: 1px solid #e2e8f0;
         }
-
-        .btn-pdf {
-            width: 100%;
-            padding: 1rem;
-            margin-top: 1rem;
-            background: linear-gradient(135deg, #1a2a3a, #0f1e2f);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.2);
-        }
-        .btn-pdf:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(26, 42, 58, 0.25);
-        }
-        .btn-pdf:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .spinner {
+        .horarios-disponibles .disponible { background: #e8f5e9; }
+        .horarios-disponibles .ocupado { background: #ffebee; }
+        .badge-estado {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .badge-disponible { background: #4caf50; color: white; }
+        .badge-ocupado { background: #e53935; color: white; }
+
+        .footer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            margin-top: 1rem;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+            padding-top: 1rem;
         }
+        .footer-text .contacto { margin-top: 0.3rem; font-size: 0.85rem; color: #5a6f8f; }
 
         .preview-section {
             margin-top: 2rem;
             border-top: 2px dashed #d0d7e2;
             padding-top: 1.5rem;
         }
-        .preview-section h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
+        .preview-section h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem; }
         .preview-container {
             background: white;
             border: 1px solid #d0d7e2;
@@ -557,7 +484,6 @@
             padding: 1.5rem;
             max-height: 600px;
             overflow-y: auto;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
         }
         .preview-container #pdf-preview {
             font-family: 'Times New Roman', Times, serif;
@@ -568,59 +494,14 @@
             background: white;
             padding: 20px;
         }
-        .preview-container #pdf-preview h1,
-        .preview-container #pdf-preview h2 {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .preview-container #pdf-preview table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0.5rem 0;
-        }
-        .preview-container #pdf-preview th,
-        .preview-container #pdf-preview td {
-            border: 1px solid #c8d2e0;
-            padding: 0.4rem 0.6rem;
-            text-align: left;
-        }
-        .preview-container #pdf-preview th {
-            background: #eef3fa;
-        }
-        .preview-container #pdf-preview .nota {
-            background: #f4f8fe;
-            padding: 0.6rem 1rem;
-            border-left: 5px solid #1a2b3c;
-        }
-        .preview-container #pdf-preview .condiciones {
-            list-style: none;
-            padding: 0;
-        }
-        .preview-container #pdf-preview .condiciones li {
-            padding: 0.3rem 0;
-            border-bottom: 1px dashed #e2eaf5;
-        }
-
-        .footer-text {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #7a8fa3;
-            margin-top: 1rem;
-            border-top: 1px solid rgba(201, 168, 76, 0.15);
-            padding-top: 1rem;
-        }
-        .footer-text .contacto {
-            margin-top: 0.3rem;
-            font-size: 0.85rem;
-            color: #5a6f8f;
-        }
 
         @media (max-width: 768px) {
             .container { padding: 1.5rem; }
             .results-grid { grid-template-columns: 1fr; }
             .row { flex-direction: column; }
-            .header-titles h1 { font-size: 1.8rem; }
             .admin-toggle { top: 0.8rem; right: 1rem; }
+            .solicitud-item, .solicitud-usuario { flex-direction: column; align-items: stretch; }
+            .solicitud-item .acciones { margin-top: 0.5rem; }
         }
     </style>
 </head>
@@ -631,7 +512,7 @@
         <button class="admin-toggle" id="adminToggle">⚙️ Admin</button>
 
         <!-- Encabezado -->
-        <div class="header-wrapper" style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #1a2a3a; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+        <div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #1a2a3a; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
             <span style="font-size: 3.5rem; line-height: 1;">♟️</span>
             <div>
                 <h1 style="font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: #1a2a3a;">
@@ -641,32 +522,31 @@
             </div>
         </div>
 
-        <!-- Panel de edición (oculto por defecto) -->
-        <div class="edit-panel" id="editPanel">
-            <h3>✏️ Edición de datos <span>visible solo para el administrador</span></h3>
-            <div class="edit-row">
-                <div class="edit-group">
-                    <label>Nombre de la escuela</label>
-                    <input type="text" id="editEscuela" value="Escuela Ejemplo" />
-                </div>
-                <div class="edit-group">
-                    <label>A quien va dirigido (contacto)</label>
-                    <input type="text" id="editDirigido" value="Director(a) / Coordinador(a)" />
-                </div>
+        <!-- Panel de administración -->
+        <div class="admin-panel" id="adminPanel">
+            <h3>🔧 Panel de Administración <span>Gestiona horarios y solicitudes</span></h3>
+
+            <!-- Solicitudes pendientes -->
+            <h4 style="margin-top: 0.5rem;">📋 Solicitudes pendientes</h4>
+            <div class="solicitudes-pendientes" id="solicitudesPendientes">
+                <p style="color: #7a8fa3;">No hay solicitudes pendientes.</p>
             </div>
 
+            <!-- Gestión de horarios -->
             <div class="horarios-container">
-                <h4>📅 Horarios disponibles</h4>
-                <div id="horariosList"></div>
-                <button class="btn-agregar-horario" id="agregarHorario">+ Agregar horario</button>
-                <p style="font-size:0.8rem; color:#7a8fa3; margin-top:0.5rem;">Los usuarios podrán seleccionar uno de estos horarios para la cotización.</p>
+                <h4>📅 Gestión de horarios (Disponible / Ocupado)</h4>
+                <div id="horariosListAdmin"></div>
+                <button class="btn-agregar-horario" id="agregarHorarioAdmin">+ Agregar bloque de horario</button>
+                <p style="font-size:0.8rem; color:#7a8fa3; margin-top:0.5rem;">
+                    💡 Los usuarios solo verán y podrán solicitar horarios <strong>Disponibles</strong>.
+                </p>
             </div>
 
             <!-- Cambiar contraseña -->
             <div class="password-group">
                 <input type="password" id="nuevaPassword" placeholder="Nueva contraseña (dejar en blanco para no cambiar)" />
                 <button id="cambiarPasswordBtn">Cambiar contraseña</button>
-                <span id="passwordMsg" style="font-size:0.85rem; color:#27ae60; display:none;">✓ Contraseña actualizada</span>
+                <span id="passwordMsg">✓ Contraseña actualizada</span>
             </div>
         </div>
 
@@ -674,7 +554,7 @@
         <div class="modal-overlay" id="authModal">
             <div class="modal-box">
                 <h3>🔒 Acceso restringido</h3>
-                <p>Ingresa la contraseña de administrador para editar los datos.</p>
+                <p>Ingresa la contraseña de administrador para gestionar.</p>
                 <input type="password" id="authPassword" placeholder="Contraseña" />
                 <div class="error-msg" id="authError">Contraseña incorrecta. Intenta de nuevo.</div>
                 <div>
@@ -687,10 +567,38 @@
         <!-- Contenido principal -->
         <div class="row">
             <div class="col">
-                <!-- Calculadora -->
+                <!-- Formulario de solicitud -->
+                <div class="solicitud-form">
+                    <h3>📝 Solicitar clase</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre de la escuela</label>
+                            <input type="text" id="solicitudEscuela" placeholder="Ej. ITSOEH" />
+                        </div>
+                        <div class="form-group">
+                            <label>A quien va dirigido</label>
+                            <input type="text" id="solicitudDirigido" placeholder="Director/a o Coordinador/a" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Horario deseado (solo disponibles)</label>
+                            <select id="solicitudHorario"></select>
+                            <div id="noHorariosDisponibles" style="color:#a00; font-size:0.9rem; margin-top:0.3rem; display:none;">No hay horarios disponibles.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de alumnos</label>
+                            <input type="number" id="solicitudAlumnos" value="15" min="1" max="30" />
+                        </div>
+                    </div>
+                    <button class="btn-solicitar" id="btnSolicitar">📩 Enviar solicitud</button>
+                    <div id="mensajeSolicitud" style="margin-top:0.8rem; font-weight:600;"></div>
+                </div>
+
+                <!-- Calculadora (previsualización de costos) -->
                 <div class="input-section">
                     <div class="input-group">
-                        <label for="alumnosInput">Número de alumnos por grupo</label>
+                        <label>Previsualización de costos</label>
                         <div class="input-wrapper">
                             <button class="stepper-btn" id="decrementBtn">−</button>
                             <input type="number" id="alumnosInput" min="1" max="30" value="15" />
@@ -719,30 +627,27 @@
                     <div class="warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
                 </div>
 
-                <!-- Selector de horario para el usuario -->
-                <div class="horario-selector" id="horarioSelector">
-                    <label for="horarioSelect">Selecciona el horario para la clase</label>
-                    <select id="horarioSelect">
-                        <option value="">-- Cargando horarios --</option>
-                    </select>
-                    <div class="no-horarios" id="noHorariosMsg" style="display:none;">No hay horarios disponibles. El administrador debe agregarlos.</div>
-                </div>
-
-                <!-- Tabla de horarios disponibles (visible para todos) -->
-                <div class="horarios-disponibles" id="horariosDisponibles">
-                    <h4>📋 Horarios disponibles</h4>
+                <!-- Tabla de horarios completa -->
+                <div class="horarios-disponibles">
+                    <h4>📋 Horario del profesor (Disponible / Ocupado)</h4>
                     <div id="horariosTablaContainer">
                         <p style="color:#7a8fa3; font-size:0.9rem;">Cargando horarios...</p>
                     </div>
                 </div>
-
-                <button class="btn-pdf" id="pdfBtn">📄 Descargar Cotización en PDF</button>
             </div>
         </div>
 
-        <!-- Vista previa -->
+        <!-- Mis solicitudes -->
+        <div class="mis-solicitudes">
+            <h3>📋 Mis solicitudes</h3>
+            <div id="misSolicitudesContainer">
+                <p style="color:#7a8fa3;">No has enviado ninguna solicitud.</p>
+            </div>
+        </div>
+
+        <!-- Vista previa del PDF -->
         <div class="preview-section">
-            <h3>👁️ Vista previa del PDF</h3>
+            <h3>👁️ Vista previa del PDF (solicitud aprobada)</h3>
             <div class="preview-container">
                 <div id="pdf-preview"></div>
             </div>
@@ -758,83 +663,123 @@
         (function() {
             'use strict';
 
+            // ---- Constantes ----
+            const PASSWORD_KEY = 'morphyy_admin_password';
+            const DEFAULT_PASSWORD = 'ClubMorphy369';
+
             // ---- Elementos DOM ----
-            const inputAlumnos = document.getElementById('alumnosInput');
-            const totalDisplay = document.getElementById('totalDisplay');
-            const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
-            const rangoDisplay = document.getElementById('rangoDisplay');
-            const detalleDisplay = document.getElementById('detalleDisplay');
-            const tarifaDescDisplay = document.getElementById('tarifaDescDisplay');
-            const pdfBtn = document.getElementById('pdfBtn');
-            const decrementBtn = document.getElementById('decrementBtn');
-            const incrementBtn = document.getElementById('incrementBtn');
-
-            const editEscuela = document.getElementById('editEscuela');
-            const editDirigido = document.getElementById('editDirigido');
-            const horariosList = document.getElementById('horariosList');
-            const agregarHorarioBtn = document.getElementById('agregarHorario');
-            const horarioSelect = document.getElementById('horarioSelect');
-            const noHorariosMsg = document.getElementById('noHorariosMsg');
-            const horariosTablaContainer = document.getElementById('horariosTablaContainer');
-
-            const previewContainer = document.getElementById('pdf-preview');
             const adminToggle = document.getElementById('adminToggle');
-            const editPanel = document.getElementById('editPanel');
-
-            // Modal
+            const adminPanel = document.getElementById('adminPanel');
             const authModal = document.getElementById('authModal');
             const authPassword = document.getElementById('authPassword');
             const authConfirm = document.getElementById('authConfirm');
             const authCancel = document.getElementById('authCancel');
             const authError = document.getElementById('authError');
 
-            // Cambiar contraseña
-            const nuevaPassword = document.getElementById('nuevaPassword');
+            const solicitudesPendientes = document.getElementById('solicitudesPendientes');
+            const horariosListAdmin = document.getElementById('horariosListAdmin');
+            const agregarHorarioAdmin = document.getElementById('agregarHorarioAdmin');
             const cambiarPasswordBtn = document.getElementById('cambiarPasswordBtn');
+            const nuevaPassword = document.getElementById('nuevaPassword');
             const passwordMsg = document.getElementById('passwordMsg');
+
+            const solicitudEscuela = document.getElementById('solicitudEscuela');
+            const solicitudDirigido = document.getElementById('solicitudDirigido');
+            const solicitudHorario = document.getElementById('solicitudHorario');
+            const solicitudAlumnos = document.getElementById('solicitudAlumnos');
+            const btnSolicitar = document.getElementById('btnSolicitar');
+            const mensajeSolicitud = document.getElementById('mensajeSolicitud');
+
+            const horariosTablaContainer = document.getElementById('horariosTablaContainer');
+            const misSolicitudesContainer = document.getElementById('misSolicitudesContainer');
+            const previewContainer = document.getElementById('pdf-preview');
+
+            // Calculadora
+            const inputAlumnos = document.getElementById('alumnosInput');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
+            const rangoDisplay = document.getElementById('rangoDisplay');
+            const detalleDisplay = document.getElementById('detalleDisplay');
+            const tarifaDescDisplay = document.getElementById('tarifaDescDisplay');
+            const decrementBtn = document.getElementById('decrementBtn');
+            const incrementBtn = document.getElementById('incrementBtn');
 
             // ---- Estado ----
             let horarios = [];
+            let solicitudes = [];
             let isAdminMode = false;
 
             // ---- Gestión de contraseña ----
-            const PASSWORD_KEY = 'morphyy_admin_password';
-
             function getStoredPassword() {
-                return localStorage.getItem(PASSWORD_KEY) || 'admin123'; // predeterminada
+                return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
             }
 
             function setStoredPassword(pwd) {
                 localStorage.setItem(PASSWORD_KEY, pwd);
             }
 
-            // Verificar si la contraseña ingresada es correcta
             function checkPassword(pwd) {
                 return pwd === getStoredPassword();
             }
 
             // ---- Cargar datos desde localStorage ----
-            const savedHorarios = localStorage.getItem('morphyy_horarios');
-            if (savedHorarios) {
-                try { horarios = JSON.parse(savedHorarios); } catch(e) { horarios = []; }
-            }
-            if (horarios.length === 0) {
-                horarios = [
-                    { dia: 'Lunes', inicio: '09:00', fin: '10:00' },
-                    { dia: 'Lunes', inicio: '11:00', fin: '12:00' },
-                    { dia: 'Lunes', inicio: '13:00', fin: '14:00' },
-                    { dia: 'Lunes', inicio: '15:00', fin: '16:00' },
-                    { dia: 'Miércoles', inicio: '10:00', fin: '11:00' },
-                    { dia: 'Miércoles', inicio: '12:00', fin: '13:00' },
-                    { dia: 'Miércoles', inicio: '14:00', fin: '15:00' },
-                ];
-                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+            function loadData() {
+                const savedHorarios = localStorage.getItem('morphyy_horarios_avanzado');
+                if (savedHorarios) {
+                    try { horarios = JSON.parse(savedHorarios); } catch(e) { horarios = []; }
+                }
+                if (horarios.length === 0) {
+                    // Datos de ejemplo (Lunes y Miércoles ocupados por ITSOEH)
+                    horarios = [
+                        { dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Lunes', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Martes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Martes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Miércoles', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Miércoles', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH' },
+                        { dia: 'Jueves', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Jueves', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Viernes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
+                    ];
+                    localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
+                }
+
+                const savedSolicitudes = localStorage.getItem('morphyy_solicitudes');
+                if (savedSolicitudes) {
+                    try { solicitudes = JSON.parse(savedSolicitudes); } catch(e) { solicitudes = []; }
+                }
             }
 
-            const savedEscuela = localStorage.getItem('morphyy_escuela');
-            if (savedEscuela) editEscuela.value = savedEscuela;
-            const savedDirigido = localStorage.getItem('morphyy_dirigido');
-            if (savedDirigido) editDirigido.value = savedDirigido;
+            // ---- Guardar solicitudes ----
+            function saveSolicitudes() {
+                localStorage.setItem('morphyy_solicitudes', JSON.stringify(solicitudes));
+            }
 
             // ---- Funciones de cálculo ----
             function calcular(n) {
@@ -862,119 +807,15 @@
                 return { total, porAlumno, rango, detalle, tarifaDesc };
             }
 
-            // ---- Renderizar horarios en el panel de edición ----
-            function renderHorarios() {
-                horariosList.innerHTML = '';
-                horarios.forEach((h, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'horario-item';
-                    div.innerHTML = `
-                        <select class="edit-dia" data-index="${index}">
-                            <option value="Lunes" ${h.dia==='Lunes'?'selected':''}>Lunes</option>
-                            <option value="Martes" ${h.dia==='Martes'?'selected':''}>Martes</option>
-                            <option value="Miércoles" ${h.dia==='Miércoles'?'selected':''}>Miércoles</option>
-                            <option value="Jueves" ${h.dia==='Jueves'?'selected':''}>Jueves</option>
-                            <option value="Viernes" ${h.dia==='Viernes'?'selected':''}>Viernes</option>
-                            <option value="Sábado" ${h.dia==='Sábado'?'selected':''}>Sábado</option>
-                            <option value="Domingo" ${h.dia==='Domingo'?'selected':''}>Domingo</option>
-                        </select>
-                        <input type="time" class="edit-inicio" data-index="${index}" value="${h.inicio}" />
-                        <span>a</span>
-                        <input type="time" class="edit-fin" data-index="${index}" value="${h.fin}" />
-                        <button class="btn-eliminar" data-index="${index}">✕</button>
-                    `;
-                    horariosList.appendChild(div);
-
-                    const selDia = div.querySelector('.edit-dia');
-                    const inpInicio = div.querySelector('.edit-inicio');
-                    const inpFin = div.querySelector('.edit-fin');
-                    const btnEliminar = div.querySelector('.btn-eliminar');
-
-                    const actualizarHorario = () => {
-                        horarios[index].dia = selDia.value;
-                        horarios[index].inicio = inpInicio.value;
-                        horarios[index].fin = inpFin.value;
-                        localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
-                        actualizarTodo();
-                    };
-
-                    selDia.addEventListener('change', actualizarHorario);
-                    inpInicio.addEventListener('change', actualizarHorario);
-                    inpFin.addEventListener('change', actualizarHorario);
-
-                    btnEliminar.addEventListener('click', function() {
-                        horarios.splice(index, 1);
-                        localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
-                        renderHorarios();
-                        actualizarTodo();
-                    });
-                });
-                populateHorarioSelect();
-                renderHorariosDisponibles();
-            }
-
-            // ---- Poblar el selector de horarios para usuarios ----
-            function populateHorarioSelect() {
-                horarioSelect.innerHTML = '';
-                if (horarios.length === 0) {
-                    const opt = document.createElement('option');
-                    opt.value = '';
-                    opt.textContent = '-- No hay horarios disponibles --';
-                    horarioSelect.appendChild(opt);
-                    noHorariosMsg.style.display = 'block';
-                    return;
-                }
-                noHorariosMsg.style.display = 'none';
-                horarios.forEach((h, idx) => {
-                    const opt = document.createElement('option');
-                    opt.value = idx;
-                    opt.textContent = `${h.dia} ${h.inicio} - ${h.fin}`;
-                    horarioSelect.appendChild(opt);
-                });
-                if (!horarioSelect.value) {
-                    horarioSelect.selectedIndex = 0;
-                }
-            }
-
-            // ---- Renderizar tabla de horarios disponibles (visible para todos) ----
-            function renderHorariosDisponibles() {
-                if (horarios.length === 0) {
-                    horariosTablaContainer.innerHTML = `<p style="color:#7a8fa3; font-size:0.9rem;">No hay horarios disponibles.</p>`;
-                    return;
-                }
-                let html = `<table>
-                    <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th></tr></thead><tbody>`;
-                horarios.forEach(h => {
-                    html += `<tr><td>${h.dia}</td><td>${h.inicio}</td><td>${h.fin}</td></tr>`;
-                });
-                html += `</tbody></table>`;
-                horariosTablaContainer.innerHTML = html;
-            }
-
-            // ---- Generar contenido del PDF (usando datos actuales) ----
-            function generarContenidoPDF(n, res) {
-                const escuela = editEscuela.value || 'Escuela no especificada';
-                const dirigido = editDirigido.value || 'Sin contacto';
+            // ---- Generar contenido del PDF (recibe datos de la solicitud) ----
+            function generarContenidoPDF(escuela, dirigido, horario, alumnos) {
+                const res = calcular(alumnos);
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
                     year: 'numeric', month: 'long', day: 'numeric'
                 });
-
-                let horarioSeleccionado = null;
-                const idx = parseInt(horarioSelect.value, 10);
-                if (!isNaN(idx) && horarios[idx]) {
-                    horarioSeleccionado = horarios[idx];
-                } else if (horarios.length > 0) {
-                    horarioSeleccionado = horarios[0];
-                }
-
-                let dia = 'No definido', inicio = '--:--', fin = '--:--';
-                if (horarioSeleccionado) {
-                    dia = horarioSeleccionado.dia;
-                    inicio = horarioSeleccionado.inicio;
-                    fin = horarioSeleccionado.fin;
-                }
-
-                // Obtener contacto fijo
+                const dia = horario.dia;
+                const inicio = horario.inicio;
+                const fin = horario.fin;
                 const contacto = 'German Hernández Cornejo · clubmorphy369@gmail.com · 7731856476';
 
                 return `
@@ -1000,69 +841,321 @@
                     <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
 
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
-                    <p><strong>Número de alumnos considerados para esta cotización:</strong> ${n}</p>
-                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;">
-                        <thead>
-                            <tr style="background: #eef3fa;">
-                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Rango de alumnos</th>
-                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Costo total por clase</th>
-                                <th style="padding: 0.7rem 0.8rem; border: 1px solid #c8d2e0; text-align: left;">Costo por alumno</th>
-                            </tr>
-                        </thead>
+                    <p><strong>Número de alumnos considerados:</strong> ${alumnos}</p>
+                    <table style="width:100%; border-collapse:collapse; margin:1rem 0;">
+                        <thead><tr style="background:#eef3fa;"><th style="padding:0.5rem; border:1px solid #ccc;">Rango</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo total</th><th style="padding:0.5rem; border:1px solid #ccc;">Costo por alumno</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>Menos de 15</strong></td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$350.00 MXN (fijo)</td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${n < 15 ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>15 a 20</strong></td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$375.00 a $500.00 MXN</td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${(n >= 15 && n <= 20) ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
-                            </tr>
-                            <tr style="background: #f8faff; font-weight: 600;">
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;"><strong>21 a 30</strong></td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">$500.00 MXN (cerrado)</td>
-                                <td style="padding: 0.6rem 0.8rem; border: 1px solid #c8d2e0;">${n >= 21 ? '$' + res.porAlumno.toFixed(2) : '—'}</td>
-                            </tr>
+                            <tr><td style="padding:0.5rem; border:1px solid #ccc;">Menos de 15</td><td style="padding:0.5rem; border:1px solid #ccc;">$350.00 MXN (fijo)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos < 15 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
+                            <tr><td style="padding:0.5rem; border:1px solid #ccc;">15 a 20</td><td style="padding:0.5rem; border:1px solid #ccc;">$375.00 a $500.00 MXN</td><td style="padding:0.5rem; border:1px solid #ccc;">${(alumnos >= 15 && alumnos <= 20) ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
+                            <tr style="background:#f8faff; font-weight:600;"><td style="padding:0.5rem; border:1px solid #ccc;">21 a 30</td><td style="padding:0.5rem; border:1px solid #ccc;">$500.00 MXN (cerrado)</td><td style="padding:0.5rem; border:1px solid #ccc;">${alumnos >= 21 ? '$' + res.porAlumno.toFixed(2) : '—'}</td></tr>
                         </tbody>
                     </table>
 
                     <div style="background: #f4f8fe; padding: 1rem 1.2rem; border-left: 5px solid #1a2b3c; margin: 1.2rem 0;">
-                        <strong>✓ Tarifa aplicada a su grupo:</strong> ${res.tarifaDesc}
-                        <br>
-                        <span style="font-size: 0.95rem;">Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · 
-                        Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
+                        <strong>✓ Tarifa aplicada:</strong> ${res.tarifaDesc}
+                        <br><span>Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
                     </div>
 
-                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">3. Condiciones generales</h2>
+                    <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem;">3. Condiciones generales</h2>
                     <ul style="list-style: none; padding: 0;">
-                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
-                            <strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos, cada grupo paga su propia tarifa. No se suman los alumnos para acceder al descuento.
-                        </li>
-                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;">
-                            <strong>Política de pago:</strong> El costo se define al inicio de cada periodo con base en los alumnos inscritos formalmente. No cambia por inasistencias puntuales.
-                        </li>
-                        <li style="padding: 0.4rem 0;">
-                            <strong>Bajas definitivas:</strong> Si el grupo baja de tramo, el precio se ajustará a la tarifa correspondiente a partir de la siguiente clase.
-                        </li>
+                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Grupos separados:</strong> Cada grupo paga su propia tarifa.</li>
+                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed #e2eaf5;"><strong>Política de pago:</strong> El costo se define al inicio del periodo.</li>
+                        <li style="padding: 0.4rem 0;"><strong>Bajas definitivas:</strong> El precio se ajusta si el grupo baja de tramo.</li>
                     </ul>
 
-                    <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b; font-size: 0.9rem;">
+                    <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b;">
                         <p><strong>Contacto:</strong> ${contacto}</p>
-                        <p style="font-size: 0.8rem; color: #6a7b96;">Esta cotización tiene una vigencia de 15 días naturales.</p>
+                        <p style="font-size: 0.8rem; color: #6a7b96;">Vigencia: 15 días naturales.</p>
                     </div>
                 </div>
                 `;
             }
 
-            // ---- Actualizar vista previa y toda la UI ----
+            // ---- Renderizar horarios en el panel de administración ----
+            function renderHorariosAdmin() {
+                horariosListAdmin.innerHTML = '';
+                horarios.forEach((h, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'horario-item';
+                    div.innerHTML = `
+                        <select class="edit-dia" data-index="${index}">
+                            ${['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(d => `<option value="${d}" ${h.dia===d?'selected':''}>${d}</option>`).join('')}
+                        </select>
+                        <input type="time" class="edit-inicio" data-index="${index}" value="${h.inicio}" />
+                        <span>a</span>
+                        <input type="time" class="edit-fin" data-index="${index}" value="${h.fin}" />
+                        <select class="estado-select" data-index="${index}">
+                            <option value="disponible" ${h.estado==='disponible'?'selected':''}>✅ Disponible</option>
+                            <option value="ocupado" ${h.estado==='ocupado'?'selected':''}>❌ Ocupado</option>
+                        </select>
+                        <input type="text" class="escuela-input" data-index="${index}" placeholder="Escuela (si ocupado)" value="${h.escuela || ''}" />
+                        <button class="btn-eliminar" data-index="${index}">✕</button>
+                    `;
+                    horariosListAdmin.appendChild(div);
+
+                    const selDia = div.querySelector('.edit-dia');
+                    const inpInicio = div.querySelector('.edit-inicio');
+                    const inpFin = div.querySelector('.edit-fin');
+                    const selEstado = div.querySelector('.estado-select');
+                    const inpEscuela = div.querySelector('.escuela-input');
+                    const btnEliminar = div.querySelector('.btn-eliminar');
+
+                    const actualizar = () => {
+                        horarios[index].dia = selDia.value;
+                        horarios[index].inicio = inpInicio.value;
+                        horarios[index].fin = inpFin.value;
+                        horarios[index].estado = selEstado.value;
+                        horarios[index].escuela = inpEscuela.value;
+                        localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
+                        actualizarTodo();
+                    };
+
+                    selDia.addEventListener('change', actualizar);
+                    inpInicio.addEventListener('change', actualizar);
+                    inpFin.addEventListener('change', actualizar);
+                    selEstado.addEventListener('change', actualizar);
+                    inpEscuela.addEventListener('input', actualizar);
+
+                    btnEliminar.addEventListener('click', function() {
+                        horarios.splice(index, 1);
+                        localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
+                        renderHorariosAdmin();
+                        actualizarTodo();
+                    });
+                });
+                actualizarTodo();
+            }
+
+            // ---- Renderizar tabla de horarios para usuarios ----
+            function renderHorariosTabla() {
+                if (horarios.length === 0) {
+                    horariosTablaContainer.innerHTML = `<p style="color:#7a8fa3;">No hay horarios registrados.</p>`;
+                    return;
+                }
+                let html = `<table>
+                    <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>`;
+                horarios.forEach(h => {
+                    const isDisponible = h.estado === 'disponible';
+                    const rowClass = isDisponible ? 'disponible' : 'ocupado';
+                    const badgeClass = isDisponible ? 'badge-disponible' : 'badge-ocupado';
+                    const estadoTexto = isDisponible ? 'Disponible' : 'Ocupado';
+                    const detalle = isDisponible ? '—' : (h.escuela || 'Ocupado');
+                    html += `<tr class="${rowClass}">
+                        <td><strong>${h.dia}</strong></td>
+                        <td>${h.inicio}</td>
+                        <td>${h.fin}</td>
+                        <td><span class="badge-estado ${badgeClass}">${estadoTexto}</span></td>
+                        <td>${detalle}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+                horariosTablaContainer.innerHTML = html;
+            }
+
+            // ---- Poblar selector de horarios disponibles en el formulario ----
+            function populateHorarioSelect() {
+                solicitudHorario.innerHTML = '';
+                const disponibles = horarios.filter(h => h.estado === 'disponible');
+                if (disponibles.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '-- No hay horarios disponibles --';
+                    solicitudHorario.appendChild(opt);
+                    document.getElementById('noHorariosDisponibles').style.display = 'block';
+                    return;
+                }
+                document.getElementById('noHorariosDisponibles').style.display = 'none';
+                disponibles.forEach((h, idx) => {
+                    const realIndex = horarios.indexOf(h);
+                    const opt = document.createElement('option');
+                    opt.value = realIndex;
+                    opt.textContent = `${h.dia} ${h.inicio} - ${h.fin}`;
+                    solicitudHorario.appendChild(opt);
+                });
+            }
+
+            // ---- Mostrar solicitudes pendientes en el panel de admin ----
+            function renderSolicitudesPendientes() {
+                const pendientes = solicitudes.filter(s => s.estado === 'pendiente');
+                if (pendientes.length === 0) {
+                    solicitudesPendientes.innerHTML = `<p style="color:#7a8fa3;">No hay solicitudes pendientes.</p>`;
+                    return;
+                }
+                let html = '';
+                pendientes.forEach((s, idx) => {
+                    const horario = horarios[s.horarioIndex] || { dia: '?', inicio: '?', fin: '?' };
+                    html += `
+                        <div class="solicitud-item">
+                            <div class="info">
+                                <p><strong>${s.escuela}</strong> · Dirigido a: ${s.dirigido}</p>
+                                <p>Horario: ${horario.dia} ${horario.inicio} - ${horario.fin} · Alumnos: ${s.alumnos}</p>
+                                <p style="font-size:0.8rem; color:#7a8fa3;">Solicitado el: ${s.fecha}</p>
+                            </div>
+                            <div class="acciones">
+                                <button class="btn-aprobar" data-idx="${idx}">✅ Aprobar</button>
+                                <button class="btn-rechazar" data-idx="${idx}">❌ Rechazar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                solicitudesPendientes.innerHTML = html;
+
+                // Eventos de aprobar/rechazar
+                document.querySelectorAll('.btn-aprobar').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.idx);
+                        aprobarSolicitud(idx);
+                    });
+                });
+                document.querySelectorAll('.btn-rechazar').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.idx);
+                        rechazarSolicitud(idx);
+                    });
+                });
+            }
+
+            // ---- Aprobar solicitud ----
+            function aprobarSolicitud(idx) {
+                const solicitud = solicitudes[idx];
+                if (!solicitud || solicitud.estado !== 'pendiente') return;
+
+                // Marcar horario como ocupado
+                const horarioIdx = solicitud.horarioIndex;
+                if (horarioIdx !== undefined && horarios[horarioIdx]) {
+                    horarios[horarioIdx].estado = 'ocupado';
+                    horarios[horarioIdx].escuela = solicitud.escuela;
+                    localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
+                }
+
+                solicitud.estado = 'aprobada';
+                saveSolicitudes();
+                actualizarTodo();
+                alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado.');
+            }
+
+            // ---- Rechazar solicitud ----
+            function rechazarSolicitud(idx) {
+                const solicitud = solicitudes[idx];
+                if (!solicitud || solicitud.estado !== 'pendiente') return;
+
+                solicitud.estado = 'rechazada';
+                saveSolicitudes();
+                actualizarTodo();
+                alert('❌ Solicitud rechazada.');
+            }
+
+            // ---- Mostrar mis solicitudes (usuario) ----
+            function renderMisSolicitudes() {
+                if (solicitudes.length === 0) {
+                    misSolicitudesContainer.innerHTML = `<p style="color:#7a8fa3;">No has enviado ninguna solicitud.</p>`;
+                    return;
+                }
+                let html = '';
+                solicitudes.forEach((s, idx) => {
+                    const horario = horarios[s.horarioIndex] || { dia: '?', inicio: '?', fin: '?' };
+                    let estadoHTML = '';
+                    let acciones = '';
+                    if (s.estado === 'pendiente') {
+                        estadoHTML = `<span class="estado-pendiente">⏳ Pendiente</span>`;
+                        acciones = `<span style="font-size:0.8rem; color:#7a8fa3;">Esperando aprobación...</span>`;
+                    } else if (s.estado === 'aprobada') {
+                        estadoHTML = `<span class="estado-aprobada">✅ Aprobada</span>`;
+                        acciones = `<button class="btn-descargar-pdf" data-idx="${idx}">📄 Descargar PDF</button>`;
+                    } else if (s.estado === 'rechazada') {
+                        estadoHTML = `<span class="estado-rechazada">❌ Rechazada</span>`;
+                        acciones = `<span style="font-size:0.8rem; color:#7a8fa3;">Solicitud rechazada.</span>`;
+                    }
+                    html += `
+                        <div class="solicitud-usuario">
+                            <div class="info">
+                                <p><strong>${s.escuela}</strong> · Dirigido a: ${s.dirigido}</p>
+                                <p>Horario: ${horario.dia} ${horario.inicio} - ${horario.fin} · Alumnos: ${s.alumnos}</p>
+                                <p>${estadoHTML}</p>
+                            </div>
+                            <div>${acciones}</div>
+                        </div>
+                    `;
+                });
+                misSolicitudesContainer.innerHTML = html;
+
+                // Eventos de descarga de PDF
+                document.querySelectorAll('.btn-descargar-pdf').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.idx);
+                        const solicitud = solicitudes[idx];
+                        if (solicitud && solicitud.estado === 'aprobada') {
+                            generarPDFDesdeSolicitud(solicitud);
+                        }
+                    });
+                });
+            }
+
+            // ---- Generar PDF desde una solicitud aprobada ----
+            function generarPDFDesdeSolicitud(solicitud) {
+                const horario = horarios[solicitud.horarioIndex];
+                if (!horario) return;
+
+                const contenido = generarContenidoPDF(
+                    solicitud.escuela,
+                    solicitud.dirigido,
+                    horario,
+                    solicitud.alumnos
+                );
+
+                // Crear elemento temporal y generar PDF
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = contenido;
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.top = '0';
+                tempDiv.style.left = '0';
+                tempDiv.style.width = '100%';
+                tempDiv.style.height = '100%';
+                tempDiv.style.background = 'white';
+                tempDiv.style.zIndex = '10000';
+                tempDiv.style.overflow = 'auto';
+                tempDiv.style.padding = '20px';
+                tempDiv.style.opacity = '0';
+                tempDiv.style.pointerEvents = 'none';
+                document.body.appendChild(tempDiv);
+
+                setTimeout(() => {
+                    const pdfContent = tempDiv.querySelector('div');
+                    if (!pdfContent) { alert('Error al generar el PDF.'); document.body.removeChild(tempDiv); return; }
+
+                    html2canvas(pdfContent, {
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        width: pdfContent.scrollWidth,
+                        height: pdfContent.scrollHeight,
+                    }).then((canvas) => {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF('p', 'mm', 'letter');
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                        pdf.save('Cotizacion_Club_Morphyy.pdf');
+
+                        document.body.removeChild(tempDiv);
+                    }).catch((err) => {
+                        console.error(err);
+                        document.body.removeChild(tempDiv);
+                        alert('Error al generar el PDF: ' + err.message);
+                    });
+                }, 400);
+            }
+
+            // ---- Actualizar todo (UI completa) ----
             function actualizarTodo() {
+                // Actualizar calculadora
                 let n = parseInt(inputAlumnos.value, 10);
                 if (isNaN(n) || n < 1) n = 1;
                 if (n > 30) n = 30;
                 inputAlumnos.value = n;
-
                 const res = calcular(n);
                 totalDisplay.textContent = `$${res.total.toFixed(2)}`;
                 porAlumnoDisplay.innerHTML = `$${res.porAlumno.toFixed(2)} <small>c/u</small>`;
@@ -1070,14 +1163,73 @@
                 detalleDisplay.textContent = res.detalle;
                 tarifaDescDisplay.textContent = res.tarifaDesc;
 
-                // Guardar cambios en localStorage para escuela y dirigido
-                localStorage.setItem('morphyy_escuela', editEscuela.value);
-                localStorage.setItem('morphyy_dirigido', editDirigido.value);
+                // Renderizar tablas y selectores
+                renderHorariosTabla();
+                populateHorarioSelect();
 
-                // Actualizar preview
-                const html = generarContenidoPDF(n, res);
-                previewContainer.innerHTML = html;
+                if (isAdminMode) {
+                    renderHorariosAdmin();
+                    renderSolicitudesPendientes();
+                }
+
+                renderMisSolicitudes();
+
+                // Actualizar preview (con la primera solicitud aprobada o con datos por defecto)
+                const aprobada = solicitudes.find(s => s.estado === 'aprobada');
+                if (aprobada) {
+                    const horario = horarios[aprobada.horarioIndex];
+                    if (horario) {
+                        const previewHTML = generarContenidoPDF(aprobada.escuela, aprobada.dirigido, horario, aprobada.alumnos);
+                        previewContainer.innerHTML = previewHTML;
+                    }
+                } else {
+                    // Preview por defecto con 15 alumnos
+                    const defaultHorario = horarios.find(h => h.estado === 'disponible') || horarios[0] || { dia: 'Lunes', inicio: '09:00', fin: '10:00' };
+                    const previewHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15);
+                    previewContainer.innerHTML = previewHTML;
+                }
             }
+
+            // ---- Enviar solicitud ----
+            btnSolicitar.addEventListener('click', function() {
+                const escuela = solicitudEscuela.value.trim();
+                const dirigido = solicitudDirigido.value.trim();
+                const horarioIdx = parseInt(solicitudHorario.value, 10);
+                const alumnos = parseInt(solicitudAlumnos.value, 10);
+
+                if (!escuela) { mensajeSolicitud.textContent = '⚠️ Por favor, escribe el nombre de la escuela.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
+                if (!dirigido) { mensajeSolicitud.textContent = '⚠️ Por favor, escribe a quién va dirigido.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
+                if (isNaN(horarioIdx) || horarioIdx < 0 || horarioIdx >= horarios.length || horarios[horarioIdx].estado !== 'disponible') {
+                    mensajeSolicitud.textContent = '⚠️ Por favor, selecciona un horario disponible válido.';
+                    mensajeSolicitud.style.color = '#e74c3c';
+                    return;
+                }
+                if (isNaN(alumnos) || alumnos < 1 || alumnos > 30) {
+                    mensajeSolicitud.textContent = '⚠️ El número de alumnos debe estar entre 1 y 30.';
+                    mensajeSolicitud.style.color = '#e74c3c';
+                    return;
+                }
+
+                const solicitud = {
+                    id: Date.now(),
+                    escuela: escuela,
+                    dirigido: dirigido,
+                    horarioIndex: horarioIdx,
+                    alumnos: alumnos,
+                    estado: 'pendiente',
+                    fecha: new Date().toLocaleString('es-MX'),
+                };
+                solicitudes.push(solicitud);
+                saveSolicitudes();
+
+                mensajeSolicitud.textContent = '✅ Solicitud enviada correctamente. Espera la aprobación del administrador.';
+                mensajeSolicitud.style.color = '#27ae60';
+
+                // Limpiar campos (opcional)
+                // solicitudEscuela.value = '';
+                // solicitudDirigido.value = '';
+                actualizarTodo();
+            });
 
             // ---- Eventos de la calculadora ----
             inputAlumnos.addEventListener('input', function() {
@@ -1105,28 +1257,17 @@
                 actualizarTodo();
             });
 
-            // ---- Eventos de campos editables ----
-            editEscuela.addEventListener('input', actualizarTodo);
-            editDirigido.addEventListener('input', actualizarTodo);
-
-            // ---- Evento de cambio de horario en el selector ----
-            horarioSelect.addEventListener('change', actualizarTodo);
-
-            // ---- Agregar horario ----
-            agregarHorarioBtn.addEventListener('click', function() {
-                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00' });
-                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
-                renderHorarios();
+            // ---- Agregar horario desde admin ----
+            agregarHorarioAdmin.addEventListener('click', function() {
+                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' });
+                localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 actualizarTodo();
             });
 
             // ---- Cambiar contraseña ----
             cambiarPasswordBtn.addEventListener('click', function() {
                 const newPwd = nuevaPassword.value.trim();
-                if (newPwd === '') {
-                    alert('Ingresa una nueva contraseña (no puede estar vacía).');
-                    return;
-                }
+                if (newPwd === '') { alert('Ingresa una nueva contraseña.'); return; }
                 setStoredPassword(newPwd);
                 passwordMsg.style.display = 'inline';
                 setTimeout(() => { passwordMsg.style.display = 'none'; }, 3000);
@@ -1135,27 +1276,18 @@
             });
 
             // ---- Autenticación ----
-            function mostrarModal() {
-                authPassword.value = '';
-                authError.style.display = 'none';
-                authModal.classList.add('active');
-                authPassword.focus();
-            }
-
-            function ocultarModal() {
-                authModal.classList.remove('active');
-            }
+            function mostrarModal() { authPassword.value = ''; authError.style.display = 'none'; authModal.classList.add('active'); authPassword.focus(); }
+            function ocultarModal() { authModal.classList.remove('active'); }
 
             adminToggle.addEventListener('click', function() {
                 if (isAdminMode) {
-                    // Si ya está en modo admin, cerrar el panel y ocultar
                     isAdminMode = false;
-                    editPanel.classList.remove('visible');
+                    adminPanel.classList.remove('visible');
                     this.classList.remove('active');
                     this.textContent = '⚙️ Admin';
+                    actualizarTodo();
                     return;
                 }
-                // Si no está en modo admin, pedir contraseña
                 mostrarModal();
             });
 
@@ -1163,97 +1295,23 @@
                 const pwd = authPassword.value;
                 if (checkPassword(pwd)) {
                     isAdminMode = true;
-                    editPanel.classList.add('visible');
+                    adminPanel.classList.add('visible');
                     adminToggle.classList.add('active');
                     adminToggle.textContent = '🔒 Ocultar Admin';
                     ocultarModal();
-                    // Renderizar horarios en el panel
-                    renderHorarios();
+                    actualizarTodo();
                 } else {
                     authError.style.display = 'block';
                     authPassword.value = '';
                     authPassword.focus();
                 }
             });
-
-            authCancel.addEventListener('click', function() {
-                ocultarModal();
-            });
-
-            // Cerrar modal al presionar Enter en el campo de contraseña
-            authPassword.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    authConfirm.click();
-                }
-            });
+            authCancel.addEventListener('click', ocultarModal);
+            authPassword.addEventListener('keydown', function(e) { if (e.key === 'Enter') authConfirm.click(); });
 
             // ---- Inicializar ----
-            renderHorarios();
+            loadData();
             actualizarTodo();
-
-            // ---- Generación de PDF ----
-            pdfBtn.addEventListener('click', function() {
-                pdfBtn.disabled = true;
-                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
-
-                const n = parseInt(inputAlumnos.value, 10) || 15;
-                const res = calcular(n);
-                const contenido = generarContenidoPDF(n, res);
-
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = contenido;
-                tempDiv.style.position = 'fixed';
-                tempDiv.style.top = '0';
-                tempDiv.style.left = '0';
-                tempDiv.style.width = '100%';
-                tempDiv.style.height = '100%';
-                tempDiv.style.background = 'white';
-                tempDiv.style.zIndex = '10000';
-                tempDiv.style.overflow = 'auto';
-                tempDiv.style.padding = '20px';
-                tempDiv.style.opacity = '0';
-                tempDiv.style.pointerEvents = 'none';
-                document.body.appendChild(tempDiv);
-
-                setTimeout(() => {
-                    const pdfContent = tempDiv.querySelector('div');
-                    if (!pdfContent) {
-                        alert('Error al generar el PDF.');
-                        document.body.removeChild(tempDiv);
-                        pdfBtn.disabled = false;
-                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
-                        return;
-                    }
-
-                    html2canvas(pdfContent, {
-                        scale: 2,
-                        useCORS: true,
-                        letterRendering: true,
-                        logging: false,
-                        backgroundColor: '#ffffff',
-                        width: pdfContent.scrollWidth,
-                        height: pdfContent.scrollHeight,
-                    }).then((canvas) => {
-                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                        const { jsPDF } = window.jspdf;
-                        const pdf = new jsPDF('p', 'mm', 'letter');
-                        const pdfWidth = pdf.internal.pageSize.getWidth();
-                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                        pdf.save('Cotizacion_Club_Morphyy.pdf');
-
-                        document.body.removeChild(tempDiv);
-                        pdfBtn.disabled = false;
-                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
-                    }).catch((err) => {
-                        console.error(err);
-                        document.body.removeChild(tempDiv);
-                        pdfBtn.disabled = false;
-                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
-                        alert('Error al generar el PDF: ' + err.message);
-                    });
-                }, 400);
-            });
 
         })();
     </script>
