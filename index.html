@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Tarifas - Club de Ajedrez</title>
+
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- html2pdf.js (para generar PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script>
+
+    <style>
+        /* ===== RESET Y ESTILOS BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #1a2a3a;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 60px rgba(26, 42, 58, 0.08), 0 8px 24px rgba(26, 42, 58, 0.04);
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decoración de fondo */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* ===== ENCABEZADO ===== */
+        .header-wrapper {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #1a2a3a;
+        }
+
+        .header-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #c9a84c 0%, #1a2a3a 100%);
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Logo en Base64 (ejemplo) – reemplázalo con tu logo real */
+        .logo {
+            height: 70px;
+            width: auto;
+            flex-shrink: 0;
+            filter: drop-shadow(0 4px 12px rgba(26, 42, 58, 0.1));
+            /* Si no tienes logo, usa un texto o un emoji */
+        }
+
+        .header-titles h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1a2a3a;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            margin-bottom: 0.4rem;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: #5a6f8f;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a84c 0%, #e0b961 100%);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.35rem 0.9rem;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
+            margin-left: 0.6rem;
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
+        }
+
+        /* ===== INPUT ===== */
+        .input-section {
+            background: linear-gradient(135deg, #faf8f5 0%, #f5f3f0 100%);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 18px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            position: relative;
+        }
+
+        .input-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #c9a84c 0%, #1a2a3a 100%);
+            border-radius: 18px 0 0 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .input-group label {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a2a3a;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            padding: 1rem 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: 2px solid rgba(26, 42, 58, 0.15);
+            border-radius: 12px;
+            background: white;
+            color: #1a2a3a;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            width: 120px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #c9a84c;
+            box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.15);
+        }
+
+        .input-wrapper input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .input-wrapper input[type="number"]::-webkit-outer-spin-button,
+        .input-wrapper input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .stepper-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #d0d7e2;
+            color: #1a2a3a;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stepper-btn:hover {
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.08);
+        }
+
+        .stepper-btn:active {
+            transform: scale(0.95);
+        }
+
+        .input-hint {
+            font-size: 0.85rem;
+            color: #7a8fa3;
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        /* ===== RESULTADOS ===== */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.8rem;
+            margin: 2.5rem 0;
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 16px;
+            padding: 1.8rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c9a84c 0%, transparent 100%);
+        }
+
+        .result-card:hover {
+            box-shadow: 0 12px 32px rgba(26, 42, 58, 0.08);
+            border-color: rgba(201, 168, 76, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, rgba(201, 168, 76, 0.04) 100%);
+            border-color: #c9a84c;
+        }
+
+        .result-card.highlight::before {
+            background: linear-gradient(90deg, #c9a84c 0%, #1a2a3a 100%);
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7a8fa3;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .result-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a2a3a;
+            line-height: 1.1;
+            margin-bottom: 0.6rem;
+        }
+
+        .result-value small {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #7a8fa3;
+            margin-left: 0.4rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .result-sub {
+            font-size: 0.9rem;
+            color: #5a6f8f;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(201, 168, 76, 0.2);
+        }
+
+        /* ===== INFO BOX ===== */
+        .info-box {
+            background: linear-gradient(135deg, rgba(26, 42, 58, 0.02) 0%, rgba(201, 168, 76, 0.08) 100%);
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            border-radius: 16px;
+            padding: 1.6rem;
+            margin: 2rem 0;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .info-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #c9a84c 0%, #1a2a3a 100%);
+            border-radius: 16px 0 0 16px;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            color: #1a2a3a;
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-box-content {
+            font-size: 0.9rem;
+            color: #5a6f8f;
+            line-height: 1.6;
+        }
+
+        .info-box-warning {
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            margin-top: 0.6rem;
+            font-style: italic;
+        }
+
+        /* ===== BOTÓN PDF ===== */
+        .btn-pdf {
+            width: 100%;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2f 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.2);
+        }
+
+        .btn-pdf:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(26, 42, 58, 0.25);
+            background: linear-gradient(135deg, #0f1e2f 0%, #051120 100%);
+        }
+
+        .btn-pdf:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-pdf:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-text {
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+            letter-spacing: 0.2px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            .header-main {
+                gap: 1rem;
+            }
+            .header-titles h1 {
+                font-size: 2rem;
+            }
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            .input-section {
+                padding: 1.5rem;
+            }
+            .result-value {
+                font-size: 1.8rem;
+            }
+            .input-wrapper {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .input-wrapper input {
+                width: 100%;
+                max-width: 160px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+            body {
+                padding: 1rem;
+            }
+            .header-main {
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+            .header-titles h1 {
+                font-size: 1.6rem;
+            }
+            .header-titles {
+                width: 100%;
+            }
+            .logo {
+                height: 50px;
+            }
+            .result-value {
+                font-size: 1.6rem;
+            }
+            .btn-pdf {
+                font-size: 0.95rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- ===== ENCABEZADO ===== -->
+        <div class="header-wrapper">
+            <div class="header-main">
+                <!--
+                    ⚠️ Reemplaza este SVG/Base64 con tu logo real.
+                    Puedes usar una imagen en Base64 o una URL.
+                    Si no tienes logo, puedes dejar el texto "♟️" o el emoji.
+                -->
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23c9a84c'/%3E%3Ctext x='50%25' y='55%25' font-size='80' font-family='Arial' fill='white' text-anchor='middle' dominant-baseline='central'%3E♟%3C/text%3E%3C/svg%3E"
+                alt="Logo del Club" class="logo" id="logoImg" />
+
+                <div class="header-titles">
+                    <h1>♟️ Calculadora de Tarifas</h1>
+                    <div class="header-subtitle">
+                        Clases de Ajedrez · <span class="badge">Tarifas 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== INPUT ===== -->
+        <div class="input-section">
+            <div class="input-group">
+                <label for="alumnosInput">Número de alumnos</label>
+                <div class="input-wrapper">
+                    <button class="stepper-btn" id="decrementBtn" aria-label="Disminuir">−</button>
+                    <input type="number" id="alumnosInput" min="1" max="30" value="15" />
+                    <button class="stepper-btn" id="incrementBtn" aria-label="Aumentar">+</button>
+                    <span style="font-size:0.9rem; color:#7a8fa3; font-weight:500;">(1 – 30)</span>
+                </div>
+                <div class="input-hint">↳ Ajusta el número de alumnos para calcular el costo</div>
+            </div>
+        </div>
+
+        <!-- ===== RESULTADOS ===== -->
+        <div class="results-grid">
+            <div class="result-card" id="cardTotal">
+                <div class="result-label">💰 Costo Total por Clase</div>
+                <div class="result-value" id="totalDisplay">$375.00</div>
+                <div class="result-sub" id="rangoDisplay">15 – 20 alumnos</div>
+            </div>
+            <div class="result-card highlight" id="cardPorAlumno">
+                <div class="result-label">🧑‍🎓 Costo por Alumno</div>
+                <div class="result-value" id="porAlumnoDisplay">$25.00 <small>c/u</small></div>
+                <div class="result-sub" id="detalleDisplay">Tarifa vigente</div>
+            </div>
+        </div>
+
+        <!-- ===== INFO BOX ===== -->
+        <div class="info-box" id="infoBox">
+            <div class="info-box-title">✓ Tarifa Aplicada</div>
+            <div class="info-box-content" id="tarifaDescDisplay">15 a 20 → $25.00 c/u</div>
+            <div class="info-box-warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
+        </div>
+
+        <!-- ===== BOTÓN PDF ===== -->
+        <button class="btn-pdf" id="pdfBtn">
+            📄 Descargar Cotización en PDF
+        </button>
+
+        <!-- ===== FOOTER ===== -->
+        <div class="footer-text">
+            Los precios son por grupo y por clase (1 o 2 horas). Aplican condiciones generales.
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT (Toda la lógica) ===== -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- Referencias DOM ----
+            const input = document.getElementById('alumnosInput');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
+            const rangoDisplay = document.getElementById('rangoDisplay');
+            const detalleDisplay = document.getElementById('detalleDisplay');
+            const tarifaDescDisplay = document.getElementById('tarifaDescDisplay');
+            const pdfBtn = document.getElementById('pdfBtn');
+            const decrementBtn = document.getElementById('decrementBtn');
+            const incrementBtn = document.getElementById('incrementBtn');
+            const logoImg = document.getElementById('logoImg');
+
+            // ---- Función de cálculo ----
+            function calcular(n) {
+                n = Math.min(30, Math.max(1, n));
+                let total, porAlumno, rango, detalle, tarifaDesc;
+
+                if (n < 15) {
+                    total = 350;
+                    porAlumno = n > 0 ? total / n : 0;
+                    rango = 'Menos de 15 alumnos';
+                    detalle = 'Tarifa fija (1 o 2 hrs)';
+                    tarifaDesc = 'Menos de 15 → $350.00 fijos';
+                } else if (n >= 15 && n <= 20) {
+                    total = n * 25;
+                    porAlumno = 25;
+                    rango = '15 – 20 alumnos';
+                    detalle = '$25.00 por alumno';
+                    tarifaDesc = '15 a 20 → $25.00 c/u';
+                } else {
+                    total = 500;
+                    porAlumno = total / n;
+                    rango = '21 – 30 alumnos';
+                    detalle = 'Precio cerrado por grupo';
+                    tarifaDesc = '21 a 30 → $500.00 total';
+                }
+                return { total, porAlumno, rango, detalle, tarifaDesc };
+            }
+
+            // ---- Actualizar UI ----
+            function actualizar() {
+                let n = parseInt(input.value, 10);
+                if (isNaN(n) || n < 1) n = 1;
+                if (n > 30) n = 30;
+                input.value = n;
+
+                const res = calcular(n);
+
+                totalDisplay.textContent = `$${res.total.toFixed(2)}`;
+                porAlumnoDisplay.innerHTML = `$${res.porAlumno.toFixed(2)} <small>c/u</small>`;
+                rangoDisplay.textContent = res.rango;
+                detalleDisplay.textContent = res.detalle;
+                tarifaDescDisplay.textContent = res.tarifaDesc;
+            }
+
+            // ---- Eventos del input ----
+            input.addEventListener('input', function() {
+                let val = parseInt(this.value, 10);
+                if (!isNaN(val) && val > 30) this.value = 30;
+                if (!isNaN(val) && val < 1) this.value = 1;
+                actualizar();
+            });
+
+            input.addEventListener('change', function() {
+                let val = parseInt(this.value, 10);
+                if (isNaN(val) || val < 1) this.value = 1;
+                if (val > 30) this.value = 30;
+                actualizar();
+            });
+
+            // ---- Botones stepper ----
+            decrementBtn.addEventListener('click', function() {
+                let val = parseInt(input.value, 10);
+                if (isNaN(val) || val <= 1) return;
+                input.value = val - 1;
+                actualizar();
+            });
+
+            incrementBtn.addEventListener('click', function() {
+                let val = parseInt(input.value, 10);
+                if (isNaN(val) || val >= 30) return;
+                input.value = val + 1;
+                actualizar();
+            });
+
+            // ---- Inicializar ----
+            actualizar();
+
+            // ============================================================
+            // ===== GENERACIÓN DE PDF (con logo incrustado) =====
+            // ============================================================
+            pdfBtn.addEventListener('click', function() {
+                const n = parseInt(input.value, 10) || 15;
+                const res = calcular(n);
+                const logoSrc = logoImg.src; // toma el src del logo (puede ser Base64)
+
+                // Fecha
+                const hoy = new Date();
+                const fechaStr = hoy.toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Construir HTML del PDF
+                const contenidoPDF = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Cotización - Clases de Ajedrez</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', Times, serif;
+                            margin: 1.8cm 1.5cm;
+                            color: #1e2a3a;
+                            line-height: 1.6;
+                        }
+                        .header-pdf {
+                            display: flex;
+                            align-items: center;
+                            gap: 1.2rem;
+                            border-bottom: 3px double #1a2b3c;
+                            padding-bottom: 0.8rem;
+                            margin-bottom: 1.8rem;
+                        }
+                        .header-pdf .logo-pdf {
+                            height: 65px;
+                            width: auto;
+                            flex-shrink: 0;
+                        }
+                        .header-pdf .titulos-pdf h1 {
+                            font-size: 1.9rem;
+                            letter-spacing: 1px;
+                            margin: 0;
+                            color: #0f1e2f;
+                        }
+                        .header-pdf .titulos-pdf p {
+                            font-size: 1rem;
+                            color: #3d506b;
+                            margin: 0.2rem 0 0;
+                        }
+                        .fecha {
+                            text-align: right;
+                            font-size: 0.95rem;
+                            margin-bottom: 1.5rem;
+                            color: #3d506b;
+                        }
+                        .seccion {
+                            margin-bottom: 1.8rem;
+                        }
+                        .seccion h2 {
+                            font-size: 1.2rem;
+                            color: #0f1e2f;
+                            border-bottom: 1px solid #d0d9e6;
+                            padding-bottom: 0.3rem;
+                            margin-bottom: 0.8rem;
+                            font-weight: 600;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 1rem 0;
+                            font-size: 0.95rem;
+                        }
+                        th {
+                            background: #eef3fa;
+                            text-align: left;
+                            padding: 0.6rem 0.8rem;
+                            border: 1px solid #c8d2e0;
+                            font-weight: 700;
+                            color: #0f1e2f;
+                        }
+                        td {
+                            padding: 0.6rem 0.8rem;
+                            border: 1px solid #c8d2e0;
+                        }
+                        .total-row {
+                            background: #f8faff;
+                            font-weight: 600;
+                        }
+                        .nota {
+                            background: #f4f8fe;
+                            padding: 0.8rem 1.2rem;
+                            border-left: 5px solid #1a2b3c;
+                            margin: 1.2rem 0;
+                            font-size: 0.95rem;
+                        }
+                        .condiciones {
+                            list-style: none;
+                            padding: 0;
+                        }
+                        .condiciones li {
+                            padding: 0.3rem 0;
+                            border-bottom: 1px dashed #e2eaf5;
+                        }
+                        .footer {
+                            margin-top: 2.5rem;
+                            padding-top: 1rem;
+                            border-top: 2px solid #d0d9e6;
+                            text-align: center;
+                            font-size: 0.9rem;
+                            color: #3d506b;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header-pdf">
+                        <img src="${logoSrc}" alt="Logo del Club" class="logo-pdf" />
+                        <div class="titulos-pdf">
+                            <h1>♟️ PROPUESTA DE SERVICIOS</h1>
+                            <p>Clases de Ajedrez · Tarifas 2026</p>
+                        </div>
+                    </div>
+
+                    <div class="fecha">
+                        <strong>Fecha:</strong> ${fechaStr}
+                    </div>
+
+                    <div class="seccion">
+                        <h2>1. Horario propuesto</h2>
+                        <p><strong>Día:</strong> Jueves · <strong>Horario:</strong> 14:00 a 16:00 hrs.</p>
+                    </div>
+
+                    <div class="seccion">
+                        <h2>2. Tabla de tarifas</h2>
+                        <p><strong>Alumnos considerados para esta cotización:</strong> ${n}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rango de alumnos</th>
+                                    <th>Costo total por clase</th>
+                                    <th>Costo por alumno</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Menos de 15</strong></td>
+                                    <td>$350.00 MXN (fijo)</td>
+                                    <td>${n < 15 ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>15 a 20</strong></td>
+                                    <td>$375.00 a $500.00 MXN</td>
+                                    <td>${(n >= 15 && n <= 20) ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td><strong>21 a 30</strong></td>
+                                    <td>$500.00 MXN (cerrado)</td>
+                                    <td>${n >= 21 ? `$${res.porAlumno.toFixed(2)} MXN` : '—'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="nota">
+                            <strong>✓ Tarifa aplicada a su grupo:</strong> ${res.tarifaDesc}
+                            <br />
+                            <span style="font-size:0.9rem;">Costo total: <strong>$${res.total.toFixed(2)} MXN</strong> · 
+                            Costo por alumno: <strong>$${res.porAlumno.toFixed(2)} MXN</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="seccion">
+                        <h2>3. Condiciones generales</h2>
+                        <ul class="condiciones">
+                            <li><strong>Grupos separados:</strong> Si se forman dos grupos en horarios distintos (ej. 14-15 y 15-16), cada grupo paga su propia tarifa aplicando la tabla anterior. No se suman los alumnos para acceder al descuento.</li>
+                            <li><strong>Política de pago y ajustes:</strong> El costo se define al inicio de cada periodo (ej. mensual) con base en los alumnos inscritos formalmente. El monto acordado no cambia por inasistencias puntuales.</li>
+                            <li><strong>Bajas definitivas:</strong> Si durante el curso se producen bajas que reduzcan el grupo a un tramo inferior, el precio se ajustará a la tarifa correspondiente a partir de la siguiente clase, beneficiando a ambas partes.</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer">
+                        <p>
+                            <strong>Contacto:</strong> [Tu Nombre] · [Tu teléfono] · [Tu correo electrónico]
+                        </p>
+                        <p style="font-size:0.8rem; color:#6a7b96;">
+                            Esta cotización tiene una vigencia de 15 días naturales.
+                        </p>
+                    </div>
+                </body>
+                </html>
+                `;
+
+                // Deshabilitar botón mientras se genera
+                pdfBtn.disabled = true;
+                pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
+
+                // Crear elemento temporal para el PDF
+                const pdfDiv = document.createElement('div');
+                pdfDiv.innerHTML = contenidoPDF;
+                pdfDiv.style.position = 'absolute';
+                pdfDiv.style.left = '-9999px';
+                pdfDiv.style.top = '0';
+                document.body.appendChild(pdfDiv);
+
+                // Usar html2pdf
+                const opt = {
+                    margin: [0.7, 0.7, 0.7, 0.7],
+                    filename: 'Cotizacion_Ajedrez.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                    },
+                    jsPDF: {
+                        unit: 'cm',
+                        format: 'letter',
+                        orientation: 'portrait'
+                    }
+                };
+
+                html2pdf()
+                    .set(opt)
+                    .from(pdfDiv)
+                    .save()
+                    .then(function() {
+                        document.body.removeChild(pdfDiv);
+                        pdfBtn.disabled = false;
+                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
+                    })
+                    .catch(function(err) {
+                        console.error('Error al generar PDF:', err);
+                        document.body.removeChild(pdfDiv);
+                        pdfBtn.disabled = false;
+                        pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
+                        alert('Ocurrió un error al generar el PDF. Intente de nuevo.');
+                    });
+            });
+
+        })();
+    </script>
+</body>
+</html>
