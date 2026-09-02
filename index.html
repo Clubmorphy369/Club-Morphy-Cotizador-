@@ -33,59 +33,49 @@
             padding: 2.5rem;
             box-shadow: 0 20px 60px rgba(26, 42, 58, 0.08);
             border: 1px solid rgba(201, 168, 76, 0.1);
+            position: relative;
         }
 
-        /* Encabezado */
-        .header-wrapper {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid #1a2a3a;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+        /* Botón Admin (oculto para usuarios normales) */
+        .admin-toggle {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: none;
+            border: 1px solid #d0d7e2;
+            border-radius: 30px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            color: #7a8fa3;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            opacity: 0.4;
         }
-        .club-icon {
-            font-size: 3.5rem;
-            line-height: 1;
-        }
-        .header-titles h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.4rem;
-            font-weight: 700;
+        .admin-toggle:hover {
+            opacity: 1;
+            border-color: #c9a84c;
             color: #1a2a3a;
         }
-        .header-titles .club-name {
-            color: #c9a84c;
-        }
-        .badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #c9a84c, #e0b961);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.3rem 0.9rem;
-            border-radius: 50px;
-            margin-left: 0.5rem;
-            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
+        .admin-toggle.active {
+            opacity: 1;
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.08);
+            color: #1a2a3a;
         }
 
-        /* Layout de dos columnas */
-        .row {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-        .col {
-            flex: 1 1 300px;
-        }
-
-        /* Panel de edición */
+        /* Panel de edición (oculto por defecto) */
         .edit-panel {
+            display: none;
             background: #f8f6f2;
             border-radius: 16px;
             padding: 1.5rem;
-            border: 1px solid rgba(201, 168, 76, 0.2);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .edit-panel.visible {
+            display: block;
         }
         .edit-panel h3 {
             font-family: 'Playfair Display', serif;
@@ -94,9 +84,24 @@
             color: #1a2a3a;
             border-bottom: 1px solid #d0d7e2;
             padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .edit-panel h3 span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #7a8fa3;
+            font-family: 'Inter', sans-serif;
+        }
+        .edit-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         .edit-group {
-            margin-bottom: 1rem;
+            flex: 1 1 200px;
         }
         .edit-group label {
             display: block;
@@ -117,15 +122,78 @@
             outline: none;
             border-color: #c9a84c;
         }
-        .edit-group .inline {
-            display: flex;
-            gap: 0.5rem;
+
+        /* Gestión de horarios */
+        .horarios-container {
+            margin-top: 1rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1rem;
         }
-        .edit-group .inline input {
-            flex: 1;
+        .horarios-container h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1a2a3a;
+        }
+        .horario-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .horario-item select,
+        .horario-item input {
+            padding: 0.4rem 0.6rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .horario-item select {
+            min-width: 100px;
+        }
+        .horario-item input[type="time"] {
+            width: 100px;
+        }
+        .horario-item .btn-eliminar {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #a44;
+            border-radius: 8px;
+            padding: 0.3rem 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .horario-item .btn-eliminar:hover {
+            background: #fdd;
+        }
+        .btn-agregar-horario {
+            background: #eef3fa;
+            border: 1px dashed #a0b8d0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1a2a3a;
+            transition: all 0.2s;
+        }
+        .btn-agregar-horario:hover {
+            background: #dce6f0;
         }
 
-        /* Calculadora (input y resultados) */
+        /* ---- El resto de estilos (calculadora, vista previa) son iguales que antes ---- */
+        /* Los mantengo igual, solo añado algunos ajustes para el selector de horarios */
+
+        .row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1 1 300px;
+        }
+
         .input-section {
             background: linear-gradient(135deg, #faf8f5, #f5f3f0);
             border: 1px solid rgba(201, 168, 76, 0.15);
@@ -265,7 +333,6 @@
             font-style: italic;
         }
 
-        /* Botones */
         .btn-pdf {
             width: 100%;
             padding: 1rem;
@@ -303,12 +370,40 @@
             animation: spin 0.7s linear infinite;
         }
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
-        /* Vista previa del PDF */
+        /* Selector de horario para usuarios */
+        .horario-selector {
+            background: #faf8f5;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .horario-selector label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .horario-selector select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+        }
+        .horario-selector select:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+        .horario-selector .no-horarios {
+            color: #a00;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
         .preview-section {
             margin-top: 2rem;
             border-top: 2px dashed #d0d7e2;
@@ -326,7 +421,7 @@
             padding: 1.5rem;
             max-height: 600px;
             overflow-y: auto;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
         }
         .preview-container #pdf-preview {
             font-family: 'Times New Roman', Times, serif;
@@ -337,7 +432,7 @@
             background: white;
             padding: 20px;
         }
-        .preview-container #pdf-preview h1,
+        .preview-container #pdf-preview h1, 
         .preview-container #pdf-preview h2 {
             margin-top: 0.5rem;
             margin-bottom: 0.5rem;
@@ -380,68 +475,57 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem;
-            }
-            .results-grid {
-                grid-template-columns: 1fr;
-            }
-            .row {
-                flex-direction: column;
-            }
-            .header-titles h1 {
-                font-size: 1.8rem;
-            }
+            .container { padding: 1.5rem; }
+            .results-grid { grid-template-columns: 1fr; }
+            .row { flex-direction: column; }
+            .header-titles h1 { font-size: 1.8rem; }
+            .admin-toggle { top: 0.8rem; right: 1rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
 
-        <!-- ENCABEZADO -->
-        <div class="header-wrapper">
-            <span class="club-icon">♟️</span>
-            <div class="header-titles">
-                <h1><span class="club-name">Club Morphyy</span></h1>
-                <div>Calculadora de Tarifas · <span class="badge">Tarifas 2026</span></div>
+        <!-- Botón Admin (oculto a simple vista) -->
+        <button class="admin-toggle" id="adminToggle">⚙️ Admin</button>
+
+        <!-- Encabezado -->
+        <div class="header-wrapper" style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #1a2a3a; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span style="font-size: 3.5rem; line-height: 1;">♟️</span>
+            <div>
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: #1a2a3a;">
+                    <span style="color: #c9a84c;">Club Morphyy</span>
+                </h1>
+                <div>Calculadora de Tarifas · <span class="badge" style="display:inline-block; background:linear-gradient(135deg,#c9a84c,#e0b961); color:white; font-size:0.7rem; font-weight:700; padding:0.3rem 0.9rem; border-radius:50px; margin-left:0.5rem; box-shadow:0 4px 12px rgba(201,168,76,0.25);">Tarifas 2026</span></div>
             </div>
         </div>
 
-        <!-- FILA: Panel de edición + Calculadora -->
-        <div class="row">
-            <!-- Columna izquierda: Edición de datos -->
-            <div class="col">
-                <div class="edit-panel">
-                    <h3>✏️ Datos de la cotización</h3>
-                    <div class="edit-group">
-                        <label>Día de la clase</label>
-                        <input type="text" id="editDia" value="Jueves" />
-                    </div>
-                    <div class="edit-group">
-                        <label>Horario</label>
-                        <div class="inline">
-                            <input type="time" id="editInicio" value="14:00" />
-                            <span style="align-self:center;">a</span>
-                            <input type="time" id="editFin" value="16:00" />
-                        </div>
-                    </div>
-                    <div class="edit-group">
-                        <label>Nombre de contacto</label>
-                        <input type="text" id="editNombre" value="[Tu Nombre]" />
-                    </div>
-                    <div class="edit-group">
-                        <label>Teléfono</label>
-                        <input type="text" id="editTelefono" value="[Tu teléfono]" />
-                    </div>
-                    <div class="edit-group">
-                        <label>Correo electrónico</label>
-                        <input type="text" id="editCorreo" value="[Tu correo]" />
-                    </div>
+        <!-- Panel de edición (oculto) -->
+        <div class="edit-panel" id="editPanel">
+            <h3>✏️ Edición de datos <span>visible solo para el administrador</span></h3>
+            <div class="edit-row">
+                <div class="edit-group">
+                    <label>Nombre de la escuela</label>
+                    <input type="text" id="editEscuela" value="Escuela Ejemplo" />
+                </div>
+                <div class="edit-group">
+                    <label>A quien va dirigido (contacto)</label>
+                    <input type="text" id="editDirigido" value="Director(a) / Coordinador(a)" />
                 </div>
             </div>
 
-            <!-- Columna derecha: Calculadora -->
+            <div class="horarios-container">
+                <h4>📅 Horarios disponibles</h4>
+                <div id="horariosList"></div>
+                <button class="btn-agregar-horario" id="agregarHorario">+ Agregar horario</button>
+                <p style="font-size:0.8rem; color:#7a8fa3; margin-top:0.5rem;">Los usuarios podrán seleccionar uno de estos horarios para la cotización.</p>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="row">
             <div class="col">
+                <!-- Calculadora -->
                 <div class="input-section">
                     <div class="input-group">
                         <label for="alumnosInput">Número de alumnos por grupo</label>
@@ -473,11 +557,20 @@
                     <div class="warning">⚠️ Si el grupo baja de tramo por bajas definitivas, el precio se ajusta en la siguiente clase.</div>
                 </div>
 
+                <!-- Selector de horario para el usuario (visible siempre) -->
+                <div class="horario-selector" id="horarioSelector">
+                    <label for="horarioSelect">Selecciona el horario para la clase</label>
+                    <select id="horarioSelect">
+                        <option value="">-- Cargando horarios --</option>
+                    </select>
+                    <div class="no-horarios" id="noHorariosMsg" style="display:none;">No hay horarios disponibles. El administrador debe agregarlos.</div>
+                </div>
+
                 <button class="btn-pdf" id="pdfBtn">📄 Descargar Cotización en PDF</button>
             </div>
         </div>
 
-        <!-- VISTA PREVIA DEL PDF -->
+        <!-- Vista previa -->
         <div class="preview-section">
             <h3>👁️ Vista previa del PDF</h3>
             <div class="preview-container">
@@ -488,14 +581,11 @@
         <div class="footer-text">Club Morphyy · Los precios son por grupo y por clase (1 o 2 horas).</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- JAVASCRIPT -->
-    <!-- ============================================================ -->
     <script>
         (function() {
             'use strict';
 
-            // ---- Referencias DOM ----
+            // ---- Elementos DOM ----
             const inputAlumnos = document.getElementById('alumnosInput');
             const totalDisplay = document.getElementById('totalDisplay');
             const porAlumnoDisplay = document.getElementById('porAlumnoDisplay');
@@ -506,17 +596,46 @@
             const decrementBtn = document.getElementById('decrementBtn');
             const incrementBtn = document.getElementById('incrementBtn');
 
-            // Campos editables
-            const editDia = document.getElementById('editDia');
-            const editInicio = document.getElementById('editInicio');
-            const editFin = document.getElementById('editFin');
-            const editNombre = document.getElementById('editNombre');
-            const editTelefono = document.getElementById('editTelefono');
-            const editCorreo = document.getElementById('editCorreo');
+            const editEscuela = document.getElementById('editEscuela');
+            const editDirigido = document.getElementById('editDirigido');
+            const horariosList = document.getElementById('horariosList');
+            const agregarHorarioBtn = document.getElementById('agregarHorario');
+            const horarioSelect = document.getElementById('horarioSelect');
+            const noHorariosMsg = document.getElementById('noHorariosMsg');
 
             const previewContainer = document.getElementById('pdf-preview');
+            const adminToggle = document.getElementById('adminToggle');
+            const editPanel = document.getElementById('editPanel');
 
-            // ---- Función de cálculo ----
+            // ---- Estado ----
+            let horarios = []; // array de { dia, inicio, fin }
+
+            // Cargar horarios desde localStorage si existen
+            const savedHorarios = localStorage.getItem('morphyy_horarios');
+            if (savedHorarios) {
+                try { horarios = JSON.parse(savedHorarios); } catch(e) { horarios = []; }
+            }
+            // Si no hay horarios, agregar algunos por defecto (basados en el horario de German)
+            if (horarios.length === 0) {
+                horarios = [
+                    { dia: 'Lunes', inicio: '09:00', fin: '10:00' },
+                    { dia: 'Lunes', inicio: '11:00', fin: '12:00' },
+                    { dia: 'Lunes', inicio: '13:00', fin: '14:00' },
+                    { dia: 'Lunes', inicio: '15:00', fin: '16:00' },
+                    { dia: 'Miércoles', inicio: '10:00', fin: '11:00' },
+                    { dia: 'Miércoles', inicio: '12:00', fin: '13:00' },
+                    { dia: 'Miércoles', inicio: '14:00', fin: '15:00' },
+                ];
+                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+            }
+
+            // Cargar escuela y dirigido desde localStorage
+            const savedEscuela = localStorage.getItem('morphyy_escuela');
+            if (savedEscuela) editEscuela.value = savedEscuela;
+            const savedDirigido = localStorage.getItem('morphyy_dirigido');
+            if (savedDirigido) editDirigido.value = savedDirigido;
+
+            // ---- Funciones de cálculo ----
             function calcular(n) {
                 n = Math.min(30, Math.max(1, n));
                 let total, porAlumno, rango, detalle, tarifaDesc;
@@ -542,35 +661,113 @@
                 return { total, porAlumno, rango, detalle, tarifaDesc };
             }
 
-            // ---- Actualizar UI y vista previa ----
-            function actualizarTodo() {
-                let n = parseInt(inputAlumnos.value, 10);
-                if (isNaN(n) || n < 1) n = 1;
-                if (n > 30) n = 30;
-                inputAlumnos.value = n;
+            // ---- Renderizar horarios en el panel de edición ----
+            function renderHorarios() {
+                horariosList.innerHTML = '';
+                horarios.forEach((h, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'horario-item';
+                    div.innerHTML = `
+                        <select class="edit-dia" data-index="${index}">
+                            <option value="Lunes" ${h.dia==='Lunes'?'selected':''}>Lunes</option>
+                            <option value="Martes" ${h.dia==='Martes'?'selected':''}>Martes</option>
+                            <option value="Miércoles" ${h.dia==='Miércoles'?'selected':''}>Miércoles</option>
+                            <option value="Jueves" ${h.dia==='Jueves'?'selected':''}>Jueves</option>
+                            <option value="Viernes" ${h.dia==='Viernes'?'selected':''}>Viernes</option>
+                            <option value="Sábado" ${h.dia==='Sábado'?'selected':''}>Sábado</option>
+                            <option value="Domingo" ${h.dia==='Domingo'?'selected':''}>Domingo</option>
+                        </select>
+                        <input type="time" class="edit-inicio" data-index="${index}" value="${h.inicio}" />
+                        <span>a</span>
+                        <input type="time" class="edit-fin" data-index="${index}" value="${h.fin}" />
+                        <button class="btn-eliminar" data-index="${index}">✕</button>
+                    `;
+                    horariosList.appendChild(div);
 
-                const res = calcular(n);
-                totalDisplay.textContent = `$${res.total.toFixed(2)}`;
-                porAlumnoDisplay.innerHTML = `$${res.porAlumno.toFixed(2)} <small>c/u</small>`;
-                rangoDisplay.textContent = res.rango;
-                detalleDisplay.textContent = res.detalle;
-                tarifaDescDisplay.textContent = res.tarifaDesc;
+                    // Eventos para editar horario
+                    const selDia = div.querySelector('.edit-dia');
+                    const inpInicio = div.querySelector('.edit-inicio');
+                    const inpFin = div.querySelector('.edit-fin');
+                    const btnEliminar = div.querySelector('.btn-eliminar');
 
-                // Actualizar vista previa del PDF
-                actualizarPreview(n, res);
+                    const actualizarHorario = () => {
+                        horarios[index].dia = selDia.value;
+                        horarios[index].inicio = inpInicio.value;
+                        horarios[index].fin = inpFin.value;
+                        localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+                        actualizarTodo();
+                    };
+
+                    selDia.addEventListener('change', actualizarHorario);
+                    inpInicio.addEventListener('change', actualizarHorario);
+                    inpFin.addEventListener('change', actualizarHorario);
+
+                    btnEliminar.addEventListener('click', function() {
+                        horarios.splice(index, 1);
+                        localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+                        renderHorarios();
+                        actualizarTodo();
+                    });
+                });
+                // Actualizar el selector de horarios para usuarios
+                populateHorarioSelect();
             }
 
-            // ---- Generar HTML de la vista previa (y del PDF) ----
+            // ---- Poblar el selector de horarios para usuarios ----
+            function populateHorarioSelect() {
+                horarioSelect.innerHTML = '';
+                if (horarios.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '-- No hay horarios disponibles --';
+                    horarioSelect.appendChild(opt);
+                    noHorariosMsg.style.display = 'block';
+                    return;
+                }
+                noHorariosMsg.style.display = 'none';
+                horarios.forEach((h, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = idx;
+                    opt.textContent = `${h.dia} ${h.inicio} - ${h.fin}`;
+                    horarioSelect.appendChild(opt);
+                });
+                // Seleccionar el primero por defecto si no hay selección previa
+                if (!horarioSelect.value) {
+                    horarioSelect.selectedIndex = 0;
+                }
+            }
+
+            // ---- Agregar horario ----
+            agregarHorarioBtn.addEventListener('click', function() {
+                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00' });
+                localStorage.setItem('morphyy_horarios', JSON.stringify(horarios));
+                renderHorarios();
+                actualizarTodo();
+            });
+
+            // ---- Generar contenido del PDF (usando datos actuales) ----
             function generarContenidoPDF(n, res) {
-                const dia = editDia.value || 'Jueves';
-                const inicio = editInicio.value || '14:00';
-                const fin = editFin.value || '16:00';
-                const nombre = editNombre.value || '[Tu Nombre]';
-                const telefono = editTelefono.value || '[Tu teléfono]';
-                const correo = editCorreo.value || '[Tu correo]';
+                const escuela = editEscuela.value || 'Escuela no especificada';
+                const dirigido = editDirigido.value || 'Sin contacto';
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
                     year: 'numeric', month: 'long', day: 'numeric'
                 });
+
+                // Obtener horario seleccionado
+                let horarioSeleccionado = null;
+                const idx = parseInt(horarioSelect.value, 10);
+                if (!isNaN(idx) && horarios[idx]) {
+                    horarioSeleccionado = horarios[idx];
+                } else if (horarios.length > 0) {
+                    horarioSeleccionado = horarios[0];
+                }
+
+                let dia = 'No definido', inicio = '--:--', fin = '--:--';
+                if (horarioSeleccionado) {
+                    dia = horarioSeleccionado.dia;
+                    inicio = horarioSeleccionado.inicio;
+                    fin = horarioSeleccionado.fin;
+                }
 
                 return `
                 <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
@@ -584,6 +781,11 @@
 
                     <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
                         <strong>Fecha de cotización:</strong> ${fechaStr}
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">
+                        <p><strong>Escuela:</strong> ${escuela}</p>
+                        <p><strong>Dirigido a:</strong> ${dirigido}</p>
                     </div>
 
                     <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
@@ -639,24 +841,37 @@
                     </ul>
 
                     <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 2px solid #d0d9e6; text-align: center; color: #3d506b; font-size: 0.9rem;">
-                        <p><strong>Contacto:</strong> ${nombre} · ${telefono} · ${correo}</p>
+                        <p><strong>Contacto:</strong> German Hernández Cornejo · [Teléfono] · [Correo]</p>
                         <p style="font-size: 0.8rem; color: #6a7b96;">Esta cotización tiene una vigencia de 15 días naturales.</p>
                     </div>
                 </div>
                 `;
             }
 
-            function actualizarPreview(n, res) {
+            // ---- Actualizar vista previa ----
+            function actualizarTodo() {
+                let n = parseInt(inputAlumnos.value, 10);
+                if (isNaN(n) || n < 1) n = 1;
+                if (n > 30) n = 30;
+                inputAlumnos.value = n;
+
+                const res = calcular(n);
+                totalDisplay.textContent = `$${res.total.toFixed(2)}`;
+                porAlumnoDisplay.innerHTML = `$${res.porAlumno.toFixed(2)} <small>c/u</small>`;
+                rangoDisplay.textContent = res.rango;
+                detalleDisplay.textContent = res.detalle;
+                tarifaDescDisplay.textContent = res.tarifaDesc;
+
+                // Guardar cambios en localStorage para escuela y dirigido
+                localStorage.setItem('morphyy_escuela', editEscuela.value);
+                localStorage.setItem('morphyy_dirigido', editDirigido.value);
+
+                // Actualizar preview
                 const html = generarContenidoPDF(n, res);
                 previewContainer.innerHTML = html;
             }
 
-            // ---- Eventos de los campos editables ----
-            [editDia, editInicio, editFin, editNombre, editTelefono, editCorreo].forEach(el => {
-                el.addEventListener('input', actualizarTodo);
-            });
-
-            // ---- Eventos del input de alumnos ----
+            // ---- Eventos de la calculadora ----
             inputAlumnos.addEventListener('input', function() {
                 let val = parseInt(this.value, 10);
                 if (!isNaN(val) && val > 30) this.value = 30;
@@ -682,7 +897,29 @@
                 actualizarTodo();
             });
 
-            // ---- Generación de PDF (usando la vista previa) ----
+            // ---- Eventos de los campos editables ----
+            editEscuela.addEventListener('input', actualizarTodo);
+            editDirigido.addEventListener('input', actualizarTodo);
+
+            // ---- Evento de cambio de horario en el selector ----
+            horarioSelect.addEventListener('change', actualizarTodo);
+
+            // ---- Toggle del panel de administración ----
+            adminToggle.addEventListener('click', function() {
+                editPanel.classList.toggle('visible');
+                this.classList.toggle('active');
+                if (editPanel.classList.contains('visible')) {
+                    this.textContent = '🔒 Ocultar Admin';
+                } else {
+                    this.textContent = '⚙️ Admin';
+                }
+            });
+
+            // ---- Inicializar ----
+            renderHorarios();
+            actualizarTodo();
+
+            // ---- Generación de PDF ----
             pdfBtn.addEventListener('click', function() {
                 pdfBtn.disabled = true;
                 pdfBtn.innerHTML = '<span class="spinner"></span> Generando PDF...';
@@ -691,7 +928,6 @@
                 const res = calcular(n);
                 const contenido = generarContenidoPDF(n, res);
 
-                // Crear contenedor temporal
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = contenido;
                 tempDiv.style.position = 'fixed';
@@ -708,9 +944,9 @@
                 document.body.appendChild(tempDiv);
 
                 setTimeout(() => {
-                    const pdfContent = tempDiv.querySelector('div'); // el div interior
+                    const pdfContent = tempDiv.querySelector('div');
                     if (!pdfContent) {
-                        alert('Error al generar el contenido del PDF.');
+                        alert('Error al generar el PDF.');
                         document.body.removeChild(tempDiv);
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
@@ -738,7 +974,7 @@
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
                     }).catch((err) => {
-                        console.error('Error en html2canvas:', err);
+                        console.error(err);
                         document.body.removeChild(tempDiv);
                         pdfBtn.disabled = false;
                         pdfBtn.innerHTML = '📄 Descargar Cotización en PDF';
@@ -747,8 +983,6 @@
                 }, 400);
             });
 
-            // ---- Inicializar ----
-            actualizarTodo();
         })();
     </script>
 </body>
