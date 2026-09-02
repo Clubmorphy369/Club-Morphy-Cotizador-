@@ -212,6 +212,10 @@
             align-items: center;
             gap: 0.5rem;
         }
+        .solicitud-item.vencida {
+            border-left: 5px solid #e53935;
+            background: #fff5f5;
+        }
         .solicitud-item .info {
             flex: 1;
             min-width: 200px;
@@ -666,6 +670,53 @@
             color: white;
         }
 
+        /* === CALENDARIO SEMANAL VISUAL === */
+        .calendario-semanal {
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .calendario-semanal table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            min-width: 600px;
+        }
+        .calendario-semanal th,
+        .calendario-semanal td {
+            border: 1px solid #d0d7e2;
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            height: 35px;
+        }
+        .calendario-semanal th {
+            background: #1a2a3a;
+            color: white;
+            font-weight: 600;
+        }
+        .calendario-semanal .celda-disponible {
+            background: #e8f5e9;
+            cursor: pointer;
+        }
+        .calendario-semanal .celda-ocupado {
+            background: #ffebee;
+            cursor: not-allowed;
+        }
+        .calendario-semanal .celda-fuera {
+            background: #f5f5f5;
+            color: #bbb;
+        }
+        .calendario-semanal .celda-disponible:hover {
+            background: #c8e6c9;
+            outline: 2px solid #4caf50;
+        }
+        .calendario-semanal .hora-columna {
+            background: #eef3fa;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
         /* === MIS SOLICITUDES (USUARIO) === */
         .mis-solicitudes {
             margin-top: 2rem;
@@ -688,6 +739,10 @@
             align-items: center;
             gap: 0.5rem;
         }
+        .solicitud-usuario.vencida {
+            border-left: 5px solid #e53935;
+            background: #fff5f5;
+        }
         .solicitud-usuario .info {
             flex: 1;
             min-width: 180px;
@@ -707,6 +762,61 @@
         .estado-rechazada {
             color: #e74c3c;
             font-weight: 600;
+        }
+        .comentario {
+            font-style: italic;
+            color: #5a6f8f;
+            font-size: 0.85rem;
+        }
+
+        /* === BITÁCORA === */
+        .bitacora {
+            margin-top: 1rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1rem;
+        }
+        .bitacora h4 {
+            margin-bottom: 0.5rem;
+        }
+        .bitacora-lista {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .bitacora-item {
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.85rem;
+        }
+        .bitacora-item:last-child {
+            border-bottom: none;
+        }
+        .bitacora-fecha {
+            color: #7a8fa3;
+            font-size: 0.8rem;
+        }
+
+        /* === BOTONES IMPORTAR/EXPORTAR === */
+        .backup-group {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .backup-group button {
+            background: #eef3fa;
+            border: 1px solid #d0d7e2;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            min-height: 44px;
+        }
+        .backup-group button:hover {
+            background: #dce6f0;
         }
 
         /* === VISTA PREVIA === */
@@ -799,6 +909,9 @@
             .btn-solicitar {
                 width: 100%;
             }
+            .calendario-semanal table {
+                font-size: 0.7rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -868,6 +981,19 @@
                 </p>
             </div>
 
+            <div class="bitacora">
+                <h4>📜 Bitácora de cambios</h4>
+                <div class="bitacora-lista" id="bitacoraLista">
+                    <p style="color:#7a8fa3;">No hay eventos registrados.</p>
+                </div>
+            </div>
+
+            <div class="backup-group">
+                <button id="exportarDatosBtn">📤 Exportar datos</button>
+                <button id="importarDatosBtn">📥 Importar datos</button>
+                <input type="file" id="importFileInput" accept=".json" style="display:none;" />
+            </div>
+
             <div class="password-group">
                 <input type="password" id="nuevaPassword" placeholder="Nueva contraseña (dejar en blanco para no cambiar)" />
                 <button id="cambiarPasswordBtn">Cambiar contraseña</button>
@@ -920,6 +1046,10 @@
                             <input type="number" id="solicitudAlumnos" value="15" min="1" max="30" />
                         </div>
                     </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Comentario (opcional)</label>
+                        <input type="text" id="solicitudComentario" placeholder="Añade un comentario..." />
+                    </div>
                     <button class="btn-solicitar" id="btnSolicitar">📩 Enviar solicitud</button>
                     <div id="mensajeSolicitud"></div>
                 </div>
@@ -964,6 +1094,12 @@
                     </div>
                 </div>
 
+                <!-- Calendario Visual Semanal -->
+                <div class="calendario-semanal" id="calendarioSemanalContainer">
+                    <h4>📅 Calendario semanal de disponibilidad</h4>
+                    <div id="calendarioSemanal"></div>
+                </div>
+
             </div>
         </div>
 
@@ -997,6 +1133,9 @@
             const PASSWORD_KEY = 'morphyy_admin_password';
             const DEFAULT_PASSWORD = 'ClubMorphy369';
             const USER_ID_KEY = 'morphyy_user_id';
+            const LOG_KEY = 'morphyy_log';
+            const DATA_VERSION_KEY = 'morphyy_data_version';
+            const VENCIMIENTO_DIAS = 3; // días para considerar vencida una solicitud pendiente
 
             // ---- ESTADO GLOBAL ----
             let horarios = [];
@@ -1004,6 +1143,7 @@
             let isAdminMode = false;
             let draggedIndex = null;
             let userId = null;
+            let log = [];
 
             // ---- ELEMENTOS DOM ----
             const adminToggle = document.getElementById('adminToggle');
@@ -1023,15 +1163,21 @@
             const cambiarPasswordBtn = document.getElementById('cambiarPasswordBtn');
             const nuevaPassword = document.getElementById('nuevaPassword');
             const passwordMsg = document.getElementById('passwordMsg');
+            const bitacoraLista = document.getElementById('bitacoraLista');
+            const exportarDatosBtn = document.getElementById('exportarDatosBtn');
+            const importarDatosBtn = document.getElementById('importarDatosBtn');
+            const importFileInput = document.getElementById('importFileInput');
 
             const solicitudEscuela = document.getElementById('solicitudEscuela');
             const solicitudDirigido = document.getElementById('solicitudDirigido');
             const solicitudHorario = document.getElementById('solicitudHorario');
             const solicitudAlumnos = document.getElementById('solicitudAlumnos');
+            const solicitudComentario = document.getElementById('solicitudComentario');
             const btnSolicitar = document.getElementById('btnSolicitar');
             const mensajeSolicitud = document.getElementById('mensajeSolicitud');
 
             const horariosTablaContainer = document.getElementById('horariosTablaContainer');
+            const calendarioSemanalContainer = document.getElementById('calendarioSemanal');
             const misSolicitudesContainer = document.getElementById('misSolicitudesContainer');
             const previewContainer = document.getElementById('pdf-preview');
 
@@ -1044,7 +1190,91 @@
             const decrementBtn = document.getElementById('decrementBtn');
             const incrementBtn = document.getElementById('incrementBtn');
 
-            // ---- INICIALIZAR ID DE USUARIO ----
+            // ---- FUNCIONES DE BITÁCORA ----
+            function agregarLog(accion, detalles) {
+                log.unshift({
+                    fecha: new Date().toLocaleString('es-MX'),
+                    accion: accion,
+                    detalles: detalles || ''
+                });
+                // Mantener solo últimos 100 registros
+                if (log.length > 100) log = log.slice(0, 100);
+                localStorage.setItem(LOG_KEY, JSON.stringify(log));
+                renderBitacora();
+            }
+
+            function renderBitacora() {
+                if (log.length === 0) {
+                    bitacoraLista.innerHTML = '<p style="color:#7a8fa3;">No hay eventos registrados.</p>';
+                    return;
+                }
+                let html = '';
+                log.forEach(item => {
+                    html += `<div class="bitacora-item">
+                        <span class="bitacora-fecha">${item.fecha}</span> - <strong>${item.accion}</strong>
+                        ${item.detalles ? `<br><span style="color:#5a6f8f;">${item.detalles}</span>` : ''}
+                    </div>`;
+                });
+                bitacoraLista.innerHTML = html;
+            }
+
+            // ---- FUNCIONES DE RESPALDO (Exportar/Importar) ----
+            function exportarDatos() {
+                const datos = {
+                    version: 1,
+                    fecha: new Date().toISOString(),
+                    horarios: horarios,
+                    solicitudes: solicitudes,
+                    log: log
+                };
+                const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `morphyy_backup_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                agregarLog('Exportación de datos', 'Se generó archivo de respaldo');
+            }
+
+            function importarDatos(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const datos = JSON.parse(e.target.result);
+                        if (datos.horarios && Array.isArray(datos.horarios)) {
+                            horarios = datos.horarios;
+                            localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
+                        }
+                        if (datos.solicitudes && Array.isArray(datos.solicitudes)) {
+                            solicitudes = datos.solicitudes;
+                            saveSolicitudes();
+                        }
+                        if (datos.log && Array.isArray(datos.log)) {
+                            log = datos.log;
+                            localStorage.setItem(LOG_KEY, JSON.stringify(log));
+                        }
+                        actualizarTodo();
+                        agregarLog('Importación de datos', 'Se restauraron datos desde archivo');
+                        alert('Datos importados correctamente.');
+                    } catch (err) {
+                        alert('Error al importar: archivo inválido.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            exportarDatosBtn.addEventListener('click', exportarDatos);
+            importarDatosBtn.addEventListener('click', function() {
+                importFileInput.click();
+            });
+            importFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    importarDatos(this.files[0]);
+                }
+            });
+
+            // ---- INICIALIZAR ID DE USUARIO Y LOG ----
             function initUserId() {
                 let stored = localStorage.getItem(USER_ID_KEY);
                 if (!stored) {
@@ -1052,6 +1282,13 @@
                     localStorage.setItem(USER_ID_KEY, stored);
                 }
                 userId = stored;
+            }
+
+            function initLog() {
+                const savedLog = localStorage.getItem(LOG_KEY);
+                if (savedLog) {
+                    try { log = JSON.parse(savedLog); } catch(e) { log = []; }
+                }
             }
 
             // ---- GESTIÓN DE CONTRASEÑA ----
@@ -1066,6 +1303,7 @@
 
             function setStoredPassword(pwd) {
                 localStorage.setItem(PASSWORD_KEY, pwd);
+                agregarLog('Cambio de contraseña', 'Se actualizó la contraseña de administrador');
             }
 
             function checkPassword(pwd) {
@@ -1099,6 +1337,7 @@
                     this.classList.remove('active');
                     this.textContent = '⚙️ Admin';
                     actualizarTodo();
+                    agregarLog('Cierre de sesión admin', 'El administrador salió del panel');
                     return;
                 }
                 mostrarModal();
@@ -1113,6 +1352,7 @@
                     adminToggle.textContent = '🔒 Ocultar Admin';
                     ocultarModal();
                     actualizarTodo();
+                    agregarLog('Inicio de sesión admin', 'Acceso concedido al panel de administración');
                 } else {
                     authError.style.display = 'block';
                     authPassword.value = '';
@@ -1220,7 +1460,7 @@
             }
 
             // ---- GENERAR CONTENIDO DEL PDF ----
-            function generarContenidoPDF(escuela, dirigido, horario, alumnos) {
+            function generarContenidoPDF(escuela, dirigido, horario, alumnos, comentario) {
                 const res = calcular(alumnos);
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
                     year: 'numeric', month: 'long', day: 'numeric'
@@ -1245,6 +1485,7 @@
                         <div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">
                             <p><strong>Escuela:</strong> ${escuela}</p>
                             <p><strong>Dirigido a:</strong> ${dirigido}</p>
+                            ${comentario ? `<p><strong>Comentario:</strong> ${comentario}</p>` : ''}
                         </div>
                         <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
                         <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
@@ -1320,6 +1561,8 @@
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                         renderHorariosTabla();
                         populateHorarioSelect();
+                        renderCalendarioSemanal();
+                        agregarLog('Edición de horario', `Se modificó el horario ${horarios[index].dia} ${horarios[index].inicio}-${horarios[index].fin}`);
                     };
 
                     selDia.addEventListener('change', actualizar);
@@ -1329,9 +1572,10 @@
                     inpEscuela.addEventListener('input', actualizar);
 
                     btnEliminar.addEventListener('click', function() {
-                        horarios.splice(index, 1);
+                        const eliminado = horarios.splice(index, 1)[0];
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                         actualizarTodo();
+                        agregarLog('Eliminación de horario', `Se eliminó ${eliminado.dia} ${eliminado.inicio}-${eliminado.fin}`);
                     });
 
                     btnsMover.forEach(btn => {
@@ -1340,10 +1584,10 @@
                             const idx = parseInt(this.dataset.index);
                             const newIndex = dir === 'up' ? idx - 1 : idx + 1;
                             if (newIndex < 0 || newIndex >= horarios.length) return;
-                            // Intercambiar
                             [horarios[idx], horarios[newIndex]] = [horarios[newIndex], horarios[idx]];
                             localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                             actualizarTodo();
+                            agregarLog('Reordenamiento de horarios', 'Se cambió el orden de los horarios');
                         });
                     });
 
@@ -1377,6 +1621,7 @@
                         horarios.splice(toIndex, 0, movedItem);
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                         actualizarTodo();
+                        agregarLog('Reordenamiento de horarios', 'Se cambió el orden mediante arrastre');
                     });
                 });
             }
@@ -1429,6 +1674,49 @@
                 });
             }
 
+            // ---- CALENDARIO SEMANAL VISUAL ----
+            function renderCalendarioSemanal() {
+                const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+                const horas = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];
+                let html = '<table>';
+                // Encabezado
+                html += '<thead><tr><th>Hora</th>';
+                dias.forEach(dia => {
+                    html += `<th>${dia}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                // Filas por hora
+                horas.forEach(hora => {
+                    html += `<tr><td class="hora-columna">${hora}</td>`;
+                    dias.forEach(dia => {
+                        // Buscar si hay un horario que coincida con este día y hora de inicio
+                        const horario = horarios.find(h => h.dia === dia && h.inicio === hora);
+                        let clase = 'celda-fuera';
+                        let titulo = '';
+                        if (horario) {
+                            if (horario.estado === 'disponible') {
+                                clase = 'celda-disponible';
+                                titulo = `Disponible ${hora}-${horario.fin}`;
+                            } else {
+                                clase = 'celda-ocupado';
+                                titulo = `Ocupado ${hora}-${horario.fin} (${horario.escuela || 'Ocupado'})`;
+                            }
+                        } else {
+                            // Verificar si cae dentro de un rango de horario ocupado que empieza antes
+                            const horarioAnterior = horarios.find(h => h.dia === dia && h.inicio <= hora && h.fin > hora);
+                            if (horarioAnterior && horarioAnterior.estado === 'ocupado') {
+                                clase = 'celda-ocupado';
+                                titulo = `Ocupado ${horarioAnterior.inicio}-${horarioAnterior.fin}`;
+                            }
+                        }
+                        html += `<td class="${clase}" title="${titulo}"></td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                calendarioSemanalContainer.innerHTML = html;
+            }
+
             // ---- SOLICITUDES PENDIENTES (ADMIN) ----
             function renderSolicitudesPendientes() {
                 const pendientes = solicitudes.filter(s => s.estado === 'pendiente');
@@ -1437,14 +1725,19 @@
                     return;
                 }
                 let html = '';
-                pendientes.forEach((s) => {
+                pendientes.forEach(s => {
                     const horario = horarios[s.horarioIndex] || { dia: '?', inicio: '?', fin: '?' };
+                    const fechaSolicitud = new Date(s.fecha);
+                    const diasPendiente = Math.floor((Date.now() - fechaSolicitud) / (1000 * 60 * 60 * 24));
+                    const vencida = diasPendiente >= VENCIMIENTO_DIAS;
                     html += `
-                        <div class="solicitud-item" data-id="${s.id}">
+                        <div class="solicitud-item ${vencida ? 'vencida' : ''}" data-id="${s.id}">
                             <div class="info">
                                 <p><strong>${s.escuela}</strong> · Dirigido a: ${s.dirigido}</p>
                                 <p>Horario: ${horario.dia} ${horario.inicio} - ${horario.fin} · Alumnos: ${s.alumnos}</p>
-                                <p style="font-size:0.8rem; color:#7a8fa3;">Solicitado el: ${s.fecha}</p>
+                                <p style="font-size:0.8rem; color:#7a8fa3;">Solicitado el: ${s.fecha} (hace ${diasPendiente} días)</p>
+                                ${s.comentario ? `<p class="comentario">💬 ${s.comentario}</p>` : ''}
+                                ${vencida ? '<p style="color:#e53935; font-weight:600;">⚠️ Vencida</p>' : ''}
                             </div>
                             <div class="acciones">
                                 <button class="btn-aprobar" data-id="${s.id}">✅ Aprobar</button>
@@ -1484,6 +1777,7 @@
                                 <p><strong>${s.escuela}</strong> · ${s.dirigido}</p>
                                 <p>Horario: ${horario.dia} ${horario.inicio} - ${horario.fin} · Alumnos: ${s.alumnos}</p>
                                 <p style="font-size:0.8rem;">${estadoTexto}</p>
+                                ${s.comentario ? `<p class="comentario">💬 ${s.comentario}</p>` : ''}
                             </div>
                             <div class="acciones">
                                 ${s.estado === 'aprobada' ? `<button class="btn-descargar-pdf" data-id="${s.id}">📄 PDF</button>` : ''}
@@ -1526,6 +1820,7 @@
                 solicitud.estado = 'aprobada';
                 saveSolicitudes();
                 actualizarTodo();
+                agregarLog('Solicitud aprobada', `${solicitud.escuela} - ${horarios[solicitud.horarioIndex]?.dia} ${horarios[solicitud.horarioIndex]?.inicio}`);
                 alert('✅ Solicitud aprobada. El horario ha sido marcado como ocupado.');
             }
 
@@ -1535,14 +1830,17 @@
                 solicitud.estado = 'rechazada';
                 saveSolicitudes();
                 actualizarTodo();
+                agregarLog('Solicitud rechazada', `${solicitud.escuela}`);
                 alert('❌ Solicitud rechazada.');
             }
 
             function eliminarSolicitud(id) {
                 if (!confirm('¿Eliminar esta solicitud permanentemente?')) return;
+                const solicitud = solicitudes.find(s => s.id == id);
                 solicitudes = solicitudes.filter(s => s.id != id);
                 saveSolicitudes();
                 actualizarTodo();
+                if (solicitud) agregarLog('Eliminación de solicitud', `${solicitud.escuela}`);
             }
 
             function limpiarHistorial() {
@@ -1550,6 +1848,7 @@
                 solicitudes = solicitudes.filter(s => s.estado === 'pendiente');
                 saveSolicitudes();
                 actualizarTodo();
+                agregarLog('Limpieza de historial', 'Se eliminaron todas las solicitudes procesadas');
             }
 
             limpiarHistorialBtn.addEventListener('click', limpiarHistorial);
@@ -1566,7 +1865,12 @@
                     const horario = horarios[s.horarioIndex] || { dia: '?', inicio: '?', fin: '?' };
                     let estadoHTML = '';
                     let acciones = '';
+                    let vencidaClass = '';
                     if (s.estado === 'pendiente') {
+                        const diasPendiente = Math.floor((Date.now() - new Date(s.fecha)) / (1000 * 60 * 60 * 24));
+                        if (diasPendiente >= VENCIMIENTO_DIAS) {
+                            vencidaClass = 'vencida';
+                        }
                         estadoHTML = `<span class="estado-pendiente">⏳ Pendiente</span>`;
                     } else if (s.estado === 'aprobada') {
                         estadoHTML = `<span class="estado-aprobada">✅ Aprobada</span>`;
@@ -1575,11 +1879,12 @@
                         estadoHTML = `<span class="estado-rechazada">❌ Rechazada</span>`;
                     }
                     html += `
-                        <div class="solicitud-usuario" data-id="${s.id}">
+                        <div class="solicitud-usuario ${vencidaClass}" data-id="${s.id}">
                             <div class="info">
                                 <p><strong>Escuela:</strong> ${s.escuela}</p>
                                 <p><strong>Horario:</strong> ${horario.dia} ${horario.inicio} - ${horario.fin}</p>
                                 <p>${estadoHTML}</p>
+                                ${s.comentario ? `<p class="comentario">💬 ${s.comentario}</p>` : ''}
                             </div>
                             <div>${acciones}</div>
                         </div>
@@ -1602,7 +1907,7 @@
             function generarPDFDesdeSolicitud(solicitud) {
                 const horario = horarios[solicitud.horarioIndex];
                 if (!horario) return;
-                const contenido = generarContenidoPDF(solicitud.escuela, solicitud.dirigido, horario, solicitud.alumnos);
+                const contenido = generarContenidoPDF(solicitud.escuela, solicitud.dirigido, horario, solicitud.alumnos, solicitud.comentario);
 
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = contenido;
@@ -1639,6 +1944,7 @@
                         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                         pdf.save('Cotizacion_Club_Morphyy.pdf');
                         document.body.removeChild(tempDiv);
+                        agregarLog('Generación de PDF', `Para ${solicitud.escuela}`);
                     }).catch((err) => {
                         console.error(err);
                         document.body.removeChild(tempDiv);
@@ -1664,6 +1970,7 @@
                 // Tablas y selectores
                 renderHorariosTabla();
                 populateHorarioSelect();
+                renderCalendarioSemanal();
 
                 // Vistas de administrador
                 if (isAdminMode) {
@@ -1671,6 +1978,8 @@
                     renderSolicitudesPendientes();
                     renderHistorialSolicitudes();
                 }
+
+                renderBitacora();
 
                 // Mis solicitudes (solo del usuario actual)
                 renderMisSolicitudes();
@@ -1681,11 +1990,11 @@
                 if (ultimaAprobada) {
                     const horario = horarios[ultimaAprobada.horarioIndex];
                     if (horario) {
-                        previewContainer.innerHTML = generarContenidoPDF(ultimaAprobada.escuela, ultimaAprobada.dirigido, horario, ultimaAprobada.alumnos);
+                        previewContainer.innerHTML = generarContenidoPDF(ultimaAprobada.escuela, ultimaAprobada.dirigido, horario, ultimaAprobada.alumnos, ultimaAprobada.comentario);
                     }
                 } else {
                     const defaultHorario = horarios.find(h => h.estado === 'disponible') || horarios[0] || { dia: 'Lunes', inicio: '09:00', fin: '10:00' };
-                    previewContainer.innerHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15);
+                    previewContainer.innerHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15, '');
                 }
             }
 
@@ -1695,6 +2004,7 @@
                 const dirigido = solicitudDirigido.value.trim();
                 const horarioIdx = parseInt(solicitudHorario.value, 10);
                 const alumnos = parseInt(solicitudAlumnos.value, 10);
+                const comentario = solicitudComentario.value.trim();
 
                 if (!escuela) { mensajeSolicitud.textContent = '⚠️ Escribe el nombre de la escuela.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
                 if (!dirigido) { mensajeSolicitud.textContent = '⚠️ Escribe a quién va dirigido.'; mensajeSolicitud.style.color = '#e74c3c'; return; }
@@ -1718,12 +2028,15 @@
                     alumnos: alumnos,
                     estado: 'pendiente',
                     fecha: new Date().toLocaleString('es-MX'),
+                    comentario: comentario
                 });
                 saveSolicitudes();
 
                 mensajeSolicitud.textContent = '✅ Solicitud enviada. Espera aprobación.';
                 mensajeSolicitud.style.color = '#27ae60';
+                solicitudComentario.value = '';
                 actualizarTodo();
+                agregarLog('Nueva solicitud', `${escuela} - ${horarios[horarioIdx].dia} ${horarios[horarioIdx].inicio}`);
             });
 
             // ---- EVENTOS CALCULADORA ----
@@ -1757,10 +2070,12 @@
                 horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' });
                 localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 actualizarTodo();
+                agregarLog('Nuevo horario', 'Se agregó un bloque de horario');
             });
 
             // ---- INICIALIZACIÓN ----
             initUserId();
+            initLog();
             getStoredPassword();
             loadData();
             actualizarTodo();
