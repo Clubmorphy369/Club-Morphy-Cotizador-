@@ -339,6 +339,9 @@
             flex: 1 1 120px;
             min-width: 80px;
         }
+        .horario-item input[type="number"] {
+            width: 70px;
+        }
         .horario-item .btn-eliminar,
         .horario-item .btn-mover {
             background: #fee;
@@ -688,7 +691,8 @@
             padding: 0.3rem;
             text-align: center;
             font-size: 0.8rem;
-            height: 35px;
+            height: 40px;
+            vertical-align: middle;
         }
         .calendario-semanal th {
             background: #1a2a3a;
@@ -702,6 +706,8 @@
         .calendario-semanal .celda-ocupado {
             background: #ffebee;
             cursor: not-allowed;
+            font-weight: 600;
+            color: #c62828;
         }
         .calendario-semanal .celda-fuera {
             background: #f5f5f5;
@@ -797,6 +803,82 @@
         .bitacora-fecha {
             color: #7a8fa3;
             font-size: 0.8rem;
+        }
+
+        /* === TARIFAS ESPECIALES === */
+        .tarifas-especiales {
+            margin-top: 1rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1rem;
+        }
+        .tarifas-especiales h4 {
+            margin-bottom: 0.5rem;
+        }
+        .tarifas-especiales .tarifa-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .tarifa-item input {
+            padding: 0.5rem;
+            border: 2px solid #d0d7e2;
+            border-radius: 8px;
+            min-height: 40px;
+        }
+        .btn-tarifa {
+            background: #eef3fa;
+            border: 1px solid #d0d7e2;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-tarifa:hover {
+            background: #dce6f0;
+        }
+        .btn-eliminar-tarifa {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #a44;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+        }
+
+        /* === INGRESOS SEMANALES === */
+        .ingresos-semanales {
+            margin-top: 1rem;
+            border-top: 1px solid #d0d7e2;
+            padding-top: 1rem;
+        }
+        .ingresos-semanales h4 {
+            margin-bottom: 0.5rem;
+        }
+        .ingresos-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a2a3a;
+            margin: 0.5rem 0;
+        }
+        .ingresos-detalle {
+            background: white;
+            border-radius: 8px;
+            padding: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+        }
+        .ingreso-fila {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.9rem;
+        }
+        .ingreso-fila:last-child {
+            border-bottom: none;
         }
 
         /* === BOTONES IMPORTAR/EXPORTAR === */
@@ -970,6 +1052,20 @@
                 <button class="btn-eliminar-solicitud" id="limpiarHistorialBtn" style="margin-top:0.5rem; padding:0.4rem 1rem; min-height:40px;">🧹 Limpiar historial</button>
             </div>
 
+            <div class="tarifas-especiales">
+                <h4>💲 Tarifas especiales por escuela</h4>
+                <div id="tarifasEspecialesContainer"></div>
+                <button class="btn-agregar-horario" id="agregarTarifaBtn">+ Agregar tarifa especial</button>
+            </div>
+
+            <div class="ingresos-semanales">
+                <h4>💰 Calculadora de ingresos semanales</h4>
+                <div class="ingresos-total" id="ingresosTotal">$0.00</div>
+                <div class="ingresos-detalle" id="ingresosDetalle">
+                    <p style="color:#7a8fa3;">No hay horarios ocupados.</p>
+                </div>
+            </div>
+
             <div class="horarios-container">
                 <h4>📅 Gestión de horarios (Disponible / Ocupado) 
                     <span style="font-weight:400; font-size:0.8rem;">Arrastra ☰ o usa ↑↓ para reordenar</span>
@@ -1134,12 +1230,13 @@
             const DEFAULT_PASSWORD = 'ClubMorphy369';
             const USER_ID_KEY = 'morphyy_user_id';
             const LOG_KEY = 'morphyy_log';
-            const DATA_VERSION_KEY = 'morphyy_data_version';
-            const VENCIMIENTO_DIAS = 3; // días para considerar vencida una solicitud pendiente
+            const TARIFAS_KEY = 'morphyy_tarifas_especiales';
+            const VENCIMIENTO_DIAS = 3;
 
             // ---- ESTADO GLOBAL ----
             let horarios = [];
             let solicitudes = [];
+            let tarifasEspeciales = [];
             let isAdminMode = false;
             let draggedIndex = null;
             let userId = null;
@@ -1160,6 +1257,10 @@
             const limpiarHistorialBtn = document.getElementById('limpiarHistorialBtn');
             const horariosListAdmin = document.getElementById('horariosListAdmin');
             const agregarHorarioAdmin = document.getElementById('agregarHorarioAdmin');
+            const tarifasEspecialesContainer = document.getElementById('tarifasEspecialesContainer');
+            const agregarTarifaBtn = document.getElementById('agregarTarifaBtn');
+            const ingresosTotal = document.getElementById('ingresosTotal');
+            const ingresosDetalle = document.getElementById('ingresosDetalle');
             const cambiarPasswordBtn = document.getElementById('cambiarPasswordBtn');
             const nuevaPassword = document.getElementById('nuevaPassword');
             const passwordMsg = document.getElementById('passwordMsg');
@@ -1197,7 +1298,6 @@
                     accion: accion,
                     detalles: detalles || ''
                 });
-                // Mantener solo últimos 100 registros
                 if (log.length > 100) log = log.slice(0, 100);
                 localStorage.setItem(LOG_KEY, JSON.stringify(log));
                 renderBitacora();
@@ -1218,13 +1318,14 @@
                 bitacoraLista.innerHTML = html;
             }
 
-            // ---- FUNCIONES DE RESPALDO (Exportar/Importar) ----
+            // ---- FUNCIONES DE RESPALDO ----
             function exportarDatos() {
                 const datos = {
                     version: 1,
                     fecha: new Date().toISOString(),
                     horarios: horarios,
                     solicitudes: solicitudes,
+                    tarifasEspeciales: tarifasEspeciales,
                     log: log
                 };
                 const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
@@ -1250,6 +1351,10 @@
                             solicitudes = datos.solicitudes;
                             saveSolicitudes();
                         }
+                        if (datos.tarifasEspeciales && Array.isArray(datos.tarifasEspeciales)) {
+                            tarifasEspeciales = datos.tarifasEspeciales;
+                            saveTarifas();
+                        }
                         if (datos.log && Array.isArray(datos.log)) {
                             log = datos.log;
                             localStorage.setItem(LOG_KEY, JSON.stringify(log));
@@ -1274,7 +1379,7 @@
                 }
             });
 
-            // ---- INICIALIZAR ID DE USUARIO Y LOG ----
+            // ---- INICIALIZAR ----
             function initUserId() {
                 let stored = localStorage.getItem(USER_ID_KEY);
                 if (!stored) {
@@ -1289,6 +1394,17 @@
                 if (savedLog) {
                     try { log = JSON.parse(savedLog); } catch(e) { log = []; }
                 }
+            }
+
+            function initTarifas() {
+                const saved = localStorage.getItem(TARIFAS_KEY);
+                if (saved) {
+                    try { tarifasEspeciales = JSON.parse(saved); } catch(e) { tarifasEspeciales = []; }
+                }
+            }
+
+            function saveTarifas() {
+                localStorage.setItem(TARIFAS_KEY, JSON.stringify(tarifasEspeciales));
             }
 
             // ---- GESTIÓN DE CONTRASEÑA ----
@@ -1384,41 +1500,41 @@
                 }
                 if (horarios.length === 0) {
                     horarios = [
-                        { dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Lunes', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Martes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Martes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Miércoles', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Miércoles', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH' },
-                        { dia: 'Jueves', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Jueves', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '' },
-                        { dia: 'Viernes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '' },
+                        { dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Lunes', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Martes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Martes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Miércoles', inicio: '09:00', fin: '10:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '10:00', fin: '11:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '11:00', fin: '12:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '12:00', fin: '13:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '13:00', fin: '14:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '14:00', fin: '15:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Miércoles', inicio: '15:00', fin: '16:00', estado: 'ocupado', escuela: 'ITSOEH', alumnos: 20 },
+                        { dia: 'Jueves', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Jueves', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '10:00', fin: '11:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '11:00', fin: '12:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '12:00', fin: '13:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '13:00', fin: '14:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '14:00', fin: '15:00', estado: 'disponible', escuela: '', alumnos: 0 },
+                        { dia: 'Viernes', inicio: '15:00', fin: '16:00', estado: 'disponible', escuela: '', alumnos: 0 },
                     ];
                     localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 }
@@ -1459,7 +1575,7 @@
                 return { total, porAlumno, rango, detalle, tarifaDesc };
             }
 
-            // ---- GENERAR CONTENIDO DEL PDF ----
+            // ---- GENERAR CONTENIDO DEL PDF (condicional) ----
             function generarContenidoPDF(escuela, dirigido, horario, alumnos, comentario) {
                 const res = calcular(alumnos);
                 const fechaStr = new Date().toLocaleDateString('es-MX', {
@@ -1469,6 +1585,11 @@
                 const inicio = horario.inicio;
                 const fin = horario.fin;
                 const contacto = 'German Hernández Cornejo · clubmorphy369@gmail.com · 7731856476';
+
+                let infoAdicional = '';
+                if (escuela) infoAdicional += `<p><strong>Escuela:</strong> ${escuela}</p>`;
+                if (dirigido) infoAdicional += `<p><strong>Dirigido a:</strong> ${dirigido}</p>`;
+                if (comentario) infoAdicional += `<p><strong>Comentario:</strong> ${comentario}</p>`;
 
                 return `
                     <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; max-width: 800px; margin: 0 auto; background: white; color: #1a2a3a; line-height: 1.6;">
@@ -1482,11 +1603,7 @@
                         <div style="text-align: right; font-size: 0.95rem; color: #3d506b; margin-bottom: 1.8rem;">
                             <strong>Fecha de cotización:</strong> ${fechaStr}
                         </div>
-                        <div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">
-                            <p><strong>Escuela:</strong> ${escuela}</p>
-                            <p><strong>Dirigido a:</strong> ${dirigido}</p>
-                            ${comentario ? `<p><strong>Comentario:</strong> ${comentario}</p>` : ''}
-                        </div>
+                        ${infoAdicional ? `<div style="margin-bottom: 1.5rem; background: #f8faff; padding: 0.8rem 1.2rem; border-radius: 8px;">${infoAdicional}</div>` : ''}
                         <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Horario propuesto</h2>
                         <p><strong>Día:</strong> ${dia} · <strong>Horario:</strong> ${inicio} a ${fin} hrs.</p>
                         <h2 style="font-size: 1.3rem; color: #0f1e2f; border-bottom: 1px solid #d0d9e6; padding-bottom: 0.3rem; margin-top: 1.8rem; margin-bottom: 1rem;">2. Tabla de tarifas</h2>
@@ -1517,7 +1634,7 @@
                 `;
             }
 
-            // ---- RENDER HORARIOS ADMIN (con drag & drop y botones de reorden) ----
+            // ---- RENDER HORARIOS ADMIN (con drag & drop y campos de alumnos) ----
             function renderHorariosAdmin() {
                 horariosListAdmin.innerHTML = '';
                 horarios.forEach((h, index) => {
@@ -1539,6 +1656,7 @@
                             <option value="ocupado" ${h.estado==='ocupado'?'selected':''}>❌ Ocupado</option>
                         </select>
                         <input type="text" class="escuela-input" data-index="${index}" placeholder="Escuela (si ocupado)" value="${h.escuela || ''}" />
+                        <input type="number" class="alumnos-input" data-index="${index}" placeholder="Alumnos" value="${h.alumnos || 0}" min="0" max="30" />
                         <button class="btn-eliminar" data-index="${index}" title="Eliminar">✕</button>
                     `;
                     horariosListAdmin.appendChild(div);
@@ -1548,6 +1666,7 @@
                     const inpFin = div.querySelector('.edit-fin');
                     const selEstado = div.querySelector('.estado-select');
                     const inpEscuela = div.querySelector('.escuela-input');
+                    const inpAlumnos = div.querySelector('.alumnos-input');
                     const btnEliminar = div.querySelector('.btn-eliminar');
                     const dragHandle = div.querySelector('.drag-handle');
                     const btnsMover = div.querySelectorAll('.btn-mover');
@@ -1558,10 +1677,12 @@
                         horarios[index].fin = inpFin.value;
                         horarios[index].estado = selEstado.value;
                         horarios[index].escuela = inpEscuela.value;
+                        horarios[index].alumnos = parseInt(inpAlumnos.value) || 0;
                         localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                         renderHorariosTabla();
                         populateHorarioSelect();
                         renderCalendarioSemanal();
+                        calcularIngresos();
                         agregarLog('Edición de horario', `Se modificó el horario ${horarios[index].dia} ${horarios[index].inicio}-${horarios[index].fin}`);
                     };
 
@@ -1570,6 +1691,7 @@
                     inpFin.addEventListener('change', actualizar);
                     selEstado.addEventListener('change', actualizar);
                     inpEscuela.addEventListener('input', actualizar);
+                    inpAlumnos.addEventListener('input', actualizar);
 
                     btnEliminar.addEventListener('click', function() {
                         const eliminado = horarios.splice(index, 1)[0];
@@ -1674,42 +1796,42 @@
                 });
             }
 
-            // ---- CALENDARIO SEMANAL VISUAL ----
+            // ---- CALENDARIO SEMANAL VISUAL (con nombres de escuelas) ----
             function renderCalendarioSemanal() {
                 const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
                 const horas = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];
                 let html = '<table>';
-                // Encabezado
                 html += '<thead><tr><th>Hora</th>';
                 dias.forEach(dia => {
                     html += `<th>${dia}</th>`;
                 });
                 html += '</tr></thead><tbody>';
-                // Filas por hora
                 horas.forEach(hora => {
                     html += `<tr><td class="hora-columna">${hora}</td>`;
                     dias.forEach(dia => {
-                        // Buscar si hay un horario que coincida con este día y hora de inicio
                         const horario = horarios.find(h => h.dia === dia && h.inicio === hora);
                         let clase = 'celda-fuera';
                         let titulo = '';
+                        let contenido = '';
                         if (horario) {
                             if (horario.estado === 'disponible') {
                                 clase = 'celda-disponible';
                                 titulo = `Disponible ${hora}-${horario.fin}`;
+                                contenido = 'Disponible';
                             } else {
                                 clase = 'celda-ocupado';
                                 titulo = `Ocupado ${hora}-${horario.fin} (${horario.escuela || 'Ocupado'})`;
+                                contenido = horario.escuela || 'Ocupado';
                             }
                         } else {
-                            // Verificar si cae dentro de un rango de horario ocupado que empieza antes
                             const horarioAnterior = horarios.find(h => h.dia === dia && h.inicio <= hora && h.fin > hora);
                             if (horarioAnterior && horarioAnterior.estado === 'ocupado') {
                                 clase = 'celda-ocupado';
-                                titulo = `Ocupado ${horarioAnterior.inicio}-${horarioAnterior.fin}`;
+                                titulo = `Ocupado ${horarioAnterior.inicio}-${horarioAnterior.fin} (${horarioAnterior.escuela || 'Ocupado'})`;
+                                contenido = horarioAnterior.escuela || 'Ocupado';
                             }
                         }
-                        html += `<td class="${clase}" title="${titulo}"></td>`;
+                        html += `<td class="${clase}" title="${titulo}">${contenido}</td>`;
                     });
                     html += '</tr>';
                 });
@@ -1805,6 +1927,88 @@
                 });
             }
 
+            // ---- TARIFAS ESPECIALES ----
+            function renderTarifasEspeciales() {
+                if (tarifasEspeciales.length === 0) {
+                    tarifasEspecialesContainer.innerHTML = '<p style="color:#7a8fa3;">No hay tarifas especiales definidas.</p>';
+                    return;
+                }
+                let html = '';
+                tarifasEspeciales.forEach((tarifa, idx) => {
+                    html += `
+                        <div class="tarifa-item">
+                            <input type="text" value="${tarifa.escuela}" placeholder="Escuela" class="tarifa-escuela" data-index="${idx}" />
+                            <input type="number" value="${tarifa.costoPorAlumno}" placeholder="Costo por alumno" class="tarifa-costo" data-index="${idx}" min="0" step="0.01" />
+                            <button class="btn-eliminar-tarifa" data-index="${idx}">✕</button>
+                        </div>
+                    `;
+                });
+                tarifasEspecialesContainer.innerHTML = html;
+
+                tarifasEspecialesContainer.querySelectorAll('.tarifa-escuela').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const idx = parseInt(this.dataset.index);
+                        tarifasEspeciales[idx].escuela = this.value;
+                        saveTarifas();
+                        calcularIngresos();
+                        agregarLog('Edición de tarifa especial', `Escuela: ${this.value}`);
+                    });
+                });
+                tarifasEspecialesContainer.querySelectorAll('.tarifa-costo').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const idx = parseInt(this.dataset.index);
+                        tarifasEspeciales[idx].costoPorAlumno = parseFloat(this.value) || 0;
+                        saveTarifas();
+                        calcularIngresos();
+                        agregarLog('Edición de tarifa especial', `Costo: ${this.value}`);
+                    });
+                });
+                tarifasEspecialesContainer.querySelectorAll('.btn-eliminar-tarifa').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.index);
+                        tarifasEspeciales.splice(idx, 1);
+                        saveTarifas();
+                        renderTarifasEspeciales();
+                        calcularIngresos();
+                        agregarLog('Eliminación de tarifa especial', '');
+                    });
+                });
+            }
+
+            // ---- CALCULADORA DE INGRESOS SEMANALES ----
+            function calcularIngresos() {
+                let total = 0;
+                let detalleHTML = '';
+                const ocupados = horarios.filter(h => h.estado === 'ocupado');
+                if (ocupados.length === 0) {
+                    ingresosDetalle.innerHTML = '<p style="color:#7a8fa3;">No hay horarios ocupados.</p>';
+                    ingresosTotal.textContent = '$0.00';
+                    return;
+                }
+                ocupados.forEach(h => {
+                    const escuela = h.escuela || 'Sin escuela';
+                    const alumnos = h.alumnos || 15; // default 15
+                    // Buscar tarifa especial
+                    const tarifaEspecial = tarifasEspeciales.find(t => t.escuela.toLowerCase() === escuela.toLowerCase());
+                    let ingreso = 0;
+                    if (tarifaEspecial) {
+                        ingreso = alumnos * tarifaEspecial.costoPorAlumno;
+                    } else {
+                        // Usar tarifa estándar
+                        ingreso = calcular(alumnos).total;
+                    }
+                    total += ingreso;
+                    detalleHTML += `
+                        <div class="ingreso-fila">
+                            <span>${h.dia} ${h.inicio}-${h.fin} (${escuela})</span>
+                            <span>${alumnos} alumnos × $${tarifaEspecial ? tarifaEspecial.costoPorAlumno.toFixed(2) : (ingreso/alumnos).toFixed(2)} = $${ingreso.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+                ingresosTotal.textContent = `$${total.toFixed(2)}`;
+                ingresosDetalle.innerHTML = detalleHTML;
+            }
+
             // ---- APROBAR / RECHAZAR / ELIMINAR ----
             function aprobarSolicitud(id) {
                 const solicitud = solicitudes.find(s => s.id == id);
@@ -1814,6 +2018,7 @@
                 if (horarioIdx !== undefined && horarios[horarioIdx]) {
                     horarios[horarioIdx].estado = 'ocupado';
                     horarios[horarioIdx].escuela = solicitud.escuela;
+                    horarios[horarioIdx].alumnos = solicitud.alumnos || 15;
                     localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 }
 
@@ -1977,6 +2182,8 @@
                     renderHorariosAdmin();
                     renderSolicitudesPendientes();
                     renderHistorialSolicitudes();
+                    renderTarifasEspeciales();
+                    calcularIngresos();
                 }
 
                 renderBitacora();
@@ -1994,7 +2201,7 @@
                     }
                 } else {
                     const defaultHorario = horarios.find(h => h.estado === 'disponible') || horarios[0] || { dia: 'Lunes', inicio: '09:00', fin: '10:00' };
-                    previewContainer.innerHTML = generarContenidoPDF('Escuela Ejemplo', 'Director(a)', defaultHorario, 15, '');
+                    previewContainer.innerHTML = generarContenidoPDF('', '', defaultHorario, 15, '');
                 }
             }
 
@@ -2067,15 +2274,24 @@
 
             // ---- AGREGAR HORARIO ADMIN ----
             agregarHorarioAdmin.addEventListener('click', function() {
-                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '' });
+                horarios.push({ dia: 'Lunes', inicio: '09:00', fin: '10:00', estado: 'disponible', escuela: '', alumnos: 0 });
                 localStorage.setItem('morphyy_horarios_avanzado', JSON.stringify(horarios));
                 actualizarTodo();
                 agregarLog('Nuevo horario', 'Se agregó un bloque de horario');
             });
 
+            // ---- AGREGAR TARIFA ESPECIAL ----
+            agregarTarifaBtn.addEventListener('click', function() {
+                tarifasEspeciales.push({ escuela: '', costoPorAlumno: 0 });
+                saveTarifas();
+                renderTarifasEspeciales();
+                agregarLog('Nueva tarifa especial', '');
+            });
+
             // ---- INICIALIZACIÓN ----
             initUserId();
             initLog();
+            initTarifas();
             getStoredPassword();
             loadData();
             actualizarTodo();
